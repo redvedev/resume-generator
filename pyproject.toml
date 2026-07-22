@@ -1,0 +1,16 @@
+[project]
+name = "Resume-builder"
+version = "0.1.0"
+description = "Helps write resume based on your knowledge base"
+authors = [
+    {name = "Beniamin Deszert-Kłosowski", email = "beniamin.deszert123@gmail.com"}
+]
+readme = "README.md"
+requires-python = "3.12.9"
+dependencies = [
+    "pytest (>=9.1.1,<10.0.0)"
+]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
