@@ -2,3 +2,4 @@ data
 .env
 .python-version
 .venv
+user_data
