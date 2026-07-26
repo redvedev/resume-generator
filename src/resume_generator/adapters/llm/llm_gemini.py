@@ -29,5 +29,6 @@ class GeminiAdapter(LLMInterface):
             contents=prompt,
         ).text
         logger.info(f"LLM RESPONSE: {response}")
+        if response is None:
+            raise RuntimeError("LLM response is None")
         return response
-
