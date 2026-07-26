@@ -1,12 +1,12 @@
 from abc import ABC, abstractmethod
 
+
 class UserProcessor(ABC):
     def __init__(self):
         pass
 
-
     @abstractmethod
-    def get_user_personal_info(self) -> str:
+    def get_user_personal_info(self) -> dict:
         """
         Retrieve the user's personal information and return a string.
 
@@ -15,28 +15,25 @@ class UserProcessor(ABC):
         """
         pass
 
-
     @abstractmethod
-    def get_user_education(self) -> str:
+    def get_user_education(self) -> dict:
         """
-        Retrieve the user's education data and return a string.
+        Retrieve the user's education data and return a json.
 
         Returns:
-            str: A string containing the user's education data.
+            json: A list of schools
         """
         pass
 
-
     @abstractmethod
-    def get_user_skills(self) -> str:
+    def get_user_skills(self) -> dict:
         """
-        Retrieve the user's skills data and return a string.
+        Retrieve the user's skills data and return a json.
 
         Returns:
-            str: A string containing the user's skills data.
+            json: A dict of skills by category and list of skills
         """
         pass
-
 
     @abstractmethod
     def get_user_experience(self) -> str:
