@@ -2,6 +2,8 @@ import json
 import logging
 from pathlib import Path
 
+from resume_generator.domains.education import Education
+from resume_generator.domains.experience import Experience
 from resume_generator.ports.user_processor import UserProcessor
 
 logger = logging.getLogger(__name__)
@@ -34,7 +36,7 @@ class UserProcessorImpl(UserProcessor):
         content = skills_file.read_text(encoding="utf-8")
         return json.loads(content)
 
-    def get_user_education(self) -> dict:
+    def get_user_education(self) -> list[Education]:
         """
         Split skills by header (category) and turn them into list
         """
@@ -42,21 +44,42 @@ class UserProcessorImpl(UserProcessor):
         if not education_file.exists():
             logger.error(f"Education file not found: {education_file}")
             raise FileNotFoundError(f"Education file not found: {education_file}")
-        content = education_file.read_text(encoding="utf-8")
-        return json.loads(content)
+        content = json.loads(education_file.read_text(encoding="utf-8"))
+        result = []
+        for school in content:
+            result.append(
+                Education(
+                    degree=school.get("degree"),
+                    school_name=school.get("school"),
+                    date=school.get("date"),
+                    skills=school.get("relevant courses"),
+                )
+            )
+        return result
 
-    def get_user_experience(self) -> str:
+    def get_user_experience(self) -> list[Experience]:
         experience_dir = self.data_dir / self.experience_dir
         if not experience_dir.exists() or not experience_dir.is_dir():
             logger.error(f"Experience directory not found: {experience_dir}")
             raise FileNotFoundError(f"Experience directory not found: {experience_dir}")
-        experience = ""
-        for exp_file in experience_dir.glob("*.md"):
-            content = exp_file.read_text(encoding="utf-8")
-            experience += content
-            experience += "\n=====================\n"  # Separator between experiences
+        result = []
+        for exp_file in experience_dir.glob("*.json"):
+            content = json.loads(exp_file.read_text(encoding="utf-8"))
+            for work in content:
+                result.append(
+                    Experience(
+                        company=work.get("company"),
+                        position=work.get("position"),
+                        dates=work.get("date"),
+                        location=work.get("location"),
+                        summary=work.get("context"),
+                        achievements=work.get("achievements"),
+                        technologies=work.get("technologies"),
+                        impact=work.get("impact"),
+                    )
+                )
 
-        return experience
+        return result
 
     def get_user_projects(self) -> str:
         projects_dir = self.data_dir / self.projects_dir

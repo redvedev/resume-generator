@@ -1,5 +1,8 @@
 from abc import ABC, abstractmethod
 
+from resume_generator.domains.education import Education
+from resume_generator.domains.experience import Experience
+
 
 class UserProcessor(ABC):
     def __init__(self):
@@ -16,7 +19,7 @@ class UserProcessor(ABC):
         pass
 
     @abstractmethod
-    def get_user_education(self) -> dict:
+    def get_user_education(self) -> list[Education]:
         """
         Retrieve the user's education data and return a json.
 
@@ -36,7 +39,7 @@ class UserProcessor(ABC):
         pass
 
     @abstractmethod
-    def get_user_experience(self) -> str:
+    def get_user_experience(self) -> list[Experience]:
         """
         Retrieve the user's experience data and return a string.
 
