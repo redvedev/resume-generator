@@ -2,14 +2,19 @@ import json
 import logging
 from pathlib import Path
 
+from pydantic import ConfigDict
+
 from resume_generator.domains.education import Education
 from resume_generator.domains.experience import Experience
+from resume_generator.domains.personal_info import PersonalInfo
+from resume_generator.domains.project import Project, ProjectType
+from resume_generator.domains.skills import Skills
 from resume_generator.ports.user_processor import UserProcessor
 
 logger = logging.getLogger(__name__)
 
 
-class UserProcessorImpl(UserProcessor):
+class JsonUserProcessor(UserProcessor):
     def __init__(self, data_dir: Path):
         self.data_dir = data_dir
         self.personal_data_file = "personal.json"
@@ -18,23 +23,26 @@ class UserProcessorImpl(UserProcessor):
         self.projects_dir = "projects"
         self.experience_dir = "experience"
 
-    def get_user_personal_info(self) -> dict:
+    def get_user_personal_info(self) -> PersonalInfo:
         personal_file = self.data_dir / self.personal_data_file
         if not personal_file.exists():
             logger.error(f"Personal data file not found: {personal_file}")
             raise FileNotFoundError(f"Personal data file not found: {personal_file}")
         content = personal_file.read_text(encoding="utf-8")
-        return json.loads(content)
+        return PersonalInfo.model_validate_json(content)
 
-    def get_user_skills(self) -> dict:
+    def get_user_skills(self) -> list[Skills]:
         """
         Implementation of skills file parser. Markdown to json
         """
         skills_file = self.data_dir / self.skills_file
         if not skills_file.exists():
             raise FileNotFoundError(f"Skills file not found: {skills_file}")
-        content = skills_file.read_text(encoding="utf-8")
-        return json.loads(content)
+        content = json.loads(skills_file.read_text(encoding="utf-8"))
+        result = []
+        for skill in content:
+            result.append(Skills.model_validate_json(json.dumps(skill)))
+        return result
 
     def get_user_education(self) -> list[Education]:
         """
@@ -47,14 +55,7 @@ class UserProcessorImpl(UserProcessor):
         content = json.loads(education_file.read_text(encoding="utf-8"))
         result = []
         for school in content:
-            result.append(
-                Education(
-                    degree=school.get("degree"),
-                    school_name=school.get("school"),
-                    date=school.get("date"),
-                    skills=school.get("relevant courses"),
-                )
-            )
+            result.append(Education.model_validate_json(json.dumps(school)))
         return result
 
     def get_user_experience(self) -> list[Experience]:
@@ -64,31 +65,20 @@ class UserProcessorImpl(UserProcessor):
             raise FileNotFoundError(f"Experience directory not found: {experience_dir}")
         result = []
         for exp_file in experience_dir.glob("*.json"):
-            content = json.loads(exp_file.read_text(encoding="utf-8"))
-            for work in content:
-                result.append(
-                    Experience(
-                        company=work.get("company"),
-                        position=work.get("position"),
-                        dates=work.get("date"),
-                        location=work.get("location"),
-                        summary=work.get("context"),
-                        achievements=work.get("achievements"),
-                        technologies=work.get("technologies"),
-                        impact=work.get("impact"),
-                    )
-                )
+            work = exp_file.read_text(encoding="utf-8")
+            result.append(Experience.model_validate_json(work))
 
         return result
 
-    def get_user_projects(self) -> str:
+    def get_user_projects(self) -> list[Project]:
         projects_dir = self.data_dir / self.projects_dir
         if not projects_dir.exists() or not projects_dir.is_dir():
             logger.error(f"Projects directory not found: {projects_dir}")
             raise FileNotFoundError(f"Projects directory not found: {projects_dir}")
-        projects = ""
-        for project_file in projects_dir.glob("*.md"):
-            content = project_file.read_text(encoding="utf-8")
-            projects += content
-            projects += "\n=====================\n"  # Separator between projects
-        return projects
+        result = []
+        for project_file in projects_dir.glob("*.json"):
+            result.append(
+                Project.model_validate_json(project_file.read_text(encoding="utf-8"))
+            )
+
+        return result
