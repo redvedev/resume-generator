@@ -17,4 +17,3 @@ class LLMInterface(ABC):
             str: The generated response.
         """
         pass
-
