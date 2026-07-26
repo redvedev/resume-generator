@@ -1,9 +1,10 @@
-from src.ports.llm import LLMInterface
+from src.resume_generator.ports.llm import LLMInterface
 from google import genai
 import os
-from src.adapters.llm.llm_lmstudio import parse_llm_response_to_json
 import logging
+
 logger = logging.getLogger(__name__)
+
 
 class GeminiAdapter(LLMInterface):
     def __init__(self, llm_model: str):
@@ -29,3 +30,4 @@ class GeminiAdapter(LLMInterface):
         ).text
         logger.info(f"LLM RESPONSE: {response}")
         return response
+
