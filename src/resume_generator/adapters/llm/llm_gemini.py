@@ -1,7 +1,9 @@
-from src.resume_generator.ports.llm import LLMInterface
-from google import genai
-import os
 import logging
+import os
+
+from google import genai
+
+from resume_generator.ports.llm import LLMInterface
 
 logger = logging.getLogger(__name__)
 

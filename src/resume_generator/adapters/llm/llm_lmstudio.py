@@ -1,8 +1,10 @@
-from src.resume_generator.ports.llm import LLMInterface
-import lmstudio as lms
 import json
-import re
 import logging
+import re
+
+import lmstudio as lms
+
+from resume_generator.ports.llm import LLMInterface
 
 logger = logging.getLogger(__name__)
 
