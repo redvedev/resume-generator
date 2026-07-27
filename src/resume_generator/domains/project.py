@@ -17,4 +17,4 @@ class Project(BaseModel):
     metrics: list[str] = Field(alias="metrices")
     description: str = Field(alias="description")
     outcome: list[str] = Field(alias="outcome")
-    actions: list[str] = Field(alias="actions")
+    actions: list[str] = Field(alias="actions", default=[])
