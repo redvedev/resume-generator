@@ -5,6 +5,7 @@ from resume_generator.domains.experience import Experience
 from resume_generator.domains.personal_info import PersonalInfo
 from resume_generator.domains.project import Project
 from resume_generator.domains.skills import Skills
+from resume_generator.domains.user import User
 
 
 class UserProcessor(ABC):
@@ -12,7 +13,7 @@ class UserProcessor(ABC):
         pass
 
     @abstractmethod
-    def get_user_personal_info(self) -> PersonalInfo:
+    def _get_user_personal_info(self) -> PersonalInfo:
         """
         Retrieve the user's personal information and return a string.
 
@@ -22,7 +23,7 @@ class UserProcessor(ABC):
         pass
 
     @abstractmethod
-    def get_user_education(self) -> list[Education]:
+    def _get_user_education(self) -> list[Education]:
         """
         Retrieve the user's education data and return a json.
 
@@ -32,7 +33,7 @@ class UserProcessor(ABC):
         pass
 
     @abstractmethod
-    def get_user_skills(self) -> list[Skills]:
+    def _get_user_skills(self) -> list[Skills]:
         """
         Retrieve the user's skills data and return a json.
 
@@ -42,7 +43,7 @@ class UserProcessor(ABC):
         pass
 
     @abstractmethod
-    def get_user_experience(self) -> list[Experience]:
+    def _get_user_experience(self) -> list[Experience]:
         """
         Retrieve the user's experience data and return a string.
 
@@ -52,11 +53,15 @@ class UserProcessor(ABC):
         pass
 
     @abstractmethod
-    def get_user_projects(self) -> list[Project]:
+    def _get_user_projects(self) -> list[Project]:
         """
         Retrieve the user's projects data and return a string.
 
         Returns:
             str: A string containing the user's projects data.
         """
+        pass
+
+    @abstractmethod
+    def read_user(self) -> User:
         pass

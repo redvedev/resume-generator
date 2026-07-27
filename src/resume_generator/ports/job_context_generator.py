@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from resume_generator.ports.user_processor import UserProcessor
+from resume_generator.domains.user import User
 
 
 class JobContextGenerator(ABC):
@@ -21,7 +21,7 @@ class JobContextGenerator(ABC):
         pass
 
     @abstractmethod
-    def get_llm_prompt(self, user_processor: UserProcessor) -> str:
+    def get_llm_prompt(self, user: User) -> str:
         """
         Generate a prompt for the LLM based on the job description and user data.
 
@@ -32,4 +32,3 @@ class JobContextGenerator(ABC):
             str: A string containing the generated prompt for the LLM.
         """
         pass
-
