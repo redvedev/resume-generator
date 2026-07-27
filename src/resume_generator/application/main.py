@@ -1,8 +1,9 @@
 from dotenv import load_dotenv
 
 import resume_generator.application.port_selector as settings
-from resume_generator.application.compile import main as compile_all
-from resume_generator.application.offer_processor import process_offers
+
+# from resume_generator.application.compile import main as compile_all
+# from resume_generator.application.offer_processor import process_offers
 
 
 def main():
@@ -18,4 +19,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
