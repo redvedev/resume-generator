@@ -8,7 +8,7 @@ class JobContextGenerator(ABC):
         self.job_description = job_description
 
     @abstractmethod
-    def generate_job_keywords(self) -> dict:
+    def generate_job_keywords(self) -> list[str]:
         """
         Generate job keywords based on the provided job description.
 
