@@ -9,6 +9,7 @@ from resume_generator.domains.experience import Experience
 from resume_generator.domains.personal_info import PersonalInfo
 from resume_generator.domains.project import Project, ProjectType
 from resume_generator.domains.skills import Skills
+from resume_generator.domains.user import User
 from resume_generator.ports.user_processor import UserProcessor
 
 logger = logging.getLogger(__name__)
@@ -23,7 +24,7 @@ class JsonUserProcessor(UserProcessor):
         self.projects_dir = "projects"
         self.experience_dir = "experience"
 
-    def get_user_personal_info(self) -> PersonalInfo:
+    def _get_user_personal_info(self) -> PersonalInfo:
         personal_file = self.data_dir / self.personal_data_file
         if not personal_file.exists():
             logger.error(f"Personal data file not found: {personal_file}")
@@ -31,7 +32,7 @@ class JsonUserProcessor(UserProcessor):
         content = personal_file.read_text(encoding="utf-8")
         return PersonalInfo.model_validate_json(content)
 
-    def get_user_skills(self) -> list[Skills]:
+    def _get_user_skills(self) -> list[Skills]:
         """
         Implementation of skills file parser. Markdown to json
         """
@@ -44,7 +45,7 @@ class JsonUserProcessor(UserProcessor):
             result.append(Skills.model_validate_json(json.dumps(skill)))
         return result
 
-    def get_user_education(self) -> list[Education]:
+    def _get_user_education(self) -> list[Education]:
         """
         Split skills by header (category) and turn them into list
         """
@@ -58,7 +59,7 @@ class JsonUserProcessor(UserProcessor):
             result.append(Education.model_validate_json(json.dumps(school)))
         return result
 
-    def get_user_experience(self) -> list[Experience]:
+    def _get_user_experience(self) -> list[Experience]:
         experience_dir = self.data_dir / self.experience_dir
         if not experience_dir.exists() or not experience_dir.is_dir():
             logger.error(f"Experience directory not found: {experience_dir}")
@@ -70,7 +71,7 @@ class JsonUserProcessor(UserProcessor):
 
         return result
 
-    def get_user_projects(self) -> list[Project]:
+    def _get_user_projects(self) -> list[Project]:
         projects_dir = self.data_dir / self.projects_dir
         if not projects_dir.exists() or not projects_dir.is_dir():
             logger.error(f"Projects directory not found: {projects_dir}")
@@ -82,3 +83,12 @@ class JsonUserProcessor(UserProcessor):
             )
 
         return result
+
+    def get_user(self) -> User:
+        return User(
+            personal_info=self._get_user_personal_info(),
+            education=self._get_user_education(),
+            experience=self._get_user_experience(),
+            projects=self._get_user_projects(),
+            skills=self._get_user_skills(),
+        )
