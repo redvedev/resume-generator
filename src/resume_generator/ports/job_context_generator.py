@@ -27,5 +27,13 @@ class JobContextGenerator(ABC):
         pass
 
     @abstractmethod
+    def get_llm_prompt_education(self) -> str:
+        pass
+
+    @abstractmethod
+    def get_llm_prompt_projects(self) -> str:
+        pass
+
+    @abstractmethod
     def _filter_user_info(self) -> User:
         pass
