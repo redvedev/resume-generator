@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
-from src.ports.user_processor import UserProcessor
+
+from resume_generator.ports.user_processor import UserProcessor
+
 
 class JobContextGenerator(ABC):
     def __init__(self, job_description: str):
@@ -30,3 +32,4 @@ class JobContextGenerator(ABC):
             str: A string containing the generated prompt for the LLM.
         """
         pass
+
