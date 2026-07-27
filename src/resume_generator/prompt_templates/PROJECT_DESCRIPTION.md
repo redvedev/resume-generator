@@ -1,7 +1,7 @@
 ==========
 PROJECT ID: {project_id}
 {project_name} is {project_type} project.
-It is {project_description}.
+{project_description}.
 
 For the project following things were done:
 {actions}
