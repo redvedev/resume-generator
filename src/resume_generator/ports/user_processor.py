@@ -8,7 +8,7 @@ from resume_generator.domains.skills import Skills
 from resume_generator.domains.user import User
 
 
-class UserProcessor(ABC):
+class UserDataReader(ABC):
     def __init__(self):
         pass
 
