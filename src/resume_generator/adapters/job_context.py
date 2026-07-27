@@ -22,10 +22,10 @@ class JobContextGeneratorImpl(JobContextGenerator):
     def get_llm_prompt(self, user: User) -> str:
         return ""
 
-    def get_llm_prompt_work(self, user: User) -> str:
+    def get_llm_prompt_work(self) -> str:
         experience_template = PromptTemplate.from_template(JOB_DESCRIPTION_TEMPLATE)
         experiences = []
-        for job_id, job in enumerate(user.experience):
+        for job_id, job in enumerate(self.user.experience):
             tasks = "\n".join("- " + task for task in job.achievements)
             impact = "\n".join("- " + imp for imp in job.impact)
             tech_stack = ", ".join(job.technologies)
@@ -46,7 +46,7 @@ class JobContextGeneratorImpl(JobContextGenerator):
             job_description=self.job_description, work_experience="\n".join(experiences)
         )
 
-    def filter_user_info(self) -> User:
+    def _filter_user_info(self) -> User:
         job_keywords = self.generate_job_keywords()
         candidate_personal = self.user.personal_info
         skills = self.filter_relevant_skills(self.user.skills, job_keywords)

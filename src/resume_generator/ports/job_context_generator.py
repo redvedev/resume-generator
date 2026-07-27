@@ -7,7 +7,7 @@ class JobContextGenerator(ABC):
     def __init__(self, job_description: str, user: User):
         self.job_description = job_description
         self.user = user
-        self.user = self.filter_user_info()
+        self.user = self._filter_user_info()
 
     @abstractmethod
     def generate_job_keywords(self) -> list[str]:
@@ -23,9 +23,9 @@ class JobContextGenerator(ABC):
         pass
 
     @abstractmethod
-    def get_llm_prompt_work(self, user: User) -> str:
+    def get_llm_prompt_work(self) -> str:
         pass
 
     @abstractmethod
-    def filter_user_info(self) -> User:
+    def _filter_user_info(self) -> User:
         pass
