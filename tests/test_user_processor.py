@@ -8,7 +8,7 @@ from resume_generator.ports.user_processor import UserProcessor
 
 @pytest.fixture
 def user_processor() -> UserProcessor:
-    data_path = Path("user_data_copy") / "personal_data"
+    data_path = Path("user_data") / "personal_data"
     return JsonUserProcessor(data_path)
 
 
