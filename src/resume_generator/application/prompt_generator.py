@@ -5,7 +5,6 @@ from resume_generator.domains.experience import Experience
 from resume_generator.domains.project import Project
 from resume_generator.domains.skills import Skills
 from resume_generator.domains.user import User
-from resume_generator.ports.job_context_generator import PromptGenerator
 from resume_generator.prompt_templates import (
     EDUCATION_SCHOOL_DESCRIPTION_TEMPLATE,
     EDUCATION_SELECTION_TEMPLATE,
@@ -16,7 +15,7 @@ from resume_generator.prompt_templates import (
 )
 
 
-class PromptGenrator:
+class PromptGenerator:
     def __init__(self, job_description: str, user: User):
         self.job_description = job_description
         self.user = user
