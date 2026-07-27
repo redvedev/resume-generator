@@ -22,3 +22,6 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.pyright]
 extraPaths = ["."]
+
+[tool.poetry.scripts]
+main = "resume_generator.application.main:main"
