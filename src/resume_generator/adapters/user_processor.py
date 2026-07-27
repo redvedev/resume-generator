@@ -84,7 +84,7 @@ class JsonUserProcessor(UserProcessor):
 
         return result
 
-    def get_user(self) -> User:
+    def read_user(self) -> User:
         return User(
             personal_info=self._get_user_personal_info(),
             education=self._get_user_education(),
