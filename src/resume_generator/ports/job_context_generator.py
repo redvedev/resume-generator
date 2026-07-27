@@ -4,8 +4,10 @@ from resume_generator.domains.user import User
 
 
 class JobContextGenerator(ABC):
-    def __init__(self, job_description: str):
+    def __init__(self, job_description: str, user: User):
         self.job_description = job_description
+        self.user = user
+        self.user = self.filter_user_info()
 
     @abstractmethod
     def generate_job_keywords(self) -> list[str]:
@@ -21,14 +23,9 @@ class JobContextGenerator(ABC):
         pass
 
     @abstractmethod
-    def get_llm_prompt(self, user: User) -> str:
-        """
-        Generate a prompt for the LLM based on the job description and user data.
+    def get_llm_prompt_work(self, user: User) -> str:
+        pass
 
-        Args:
-            job_description (str): The job description text.
-            user_data (UserData): The user data to be used in the prompt.
-        Returns:
-            str: A string containing the generated prompt for the LLM.
-        """
+    @abstractmethod
+    def filter_user_info(self) -> User:
         pass
