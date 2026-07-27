@@ -3,10 +3,6 @@
 import logging
 from pathlib import Path
 
-# Model settings
-MAX_TOKENS = 8192
-TEMPERATURE = 0.7
-
 # File paths
 DATA_DIR = Path("user_data")
 PERSONAL_INFO_DIR = DATA_DIR / "personal_data"
