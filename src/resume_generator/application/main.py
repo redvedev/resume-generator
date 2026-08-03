@@ -11,10 +11,12 @@ def main():
     user_reader = settings.user_reader()
     user = user_reader.read_user()
 
-    offer = ""
+    offer = "We are looking for data analytics in R"
+    # TODO: Add filtering user skills to the offer according to the text, and make a new user you will send here
     prompt_generator = PromptGenerator(offer, user)
     agent = AgentInvoker(prompt_generator)
-    print(agent.get_user_education_summary())
+    education_summaries = agent.get_user_education_summary()
+    print(education_summaries)
 
 
 if __name__ == "__main__":
