@@ -1,5 +1,6 @@
 import logging
 import re
+from datetime import datetime
 from typing import Any, Dict, List
 
 from resume_generator.application.agent_invoker import AgentInvoker
@@ -113,8 +114,17 @@ class LatexGenerator:
             return ""
 
         latex = ""
-        for exp in experience_summary.jobs:
-            job = [e for e in experiences if e.job_id == exp.job_id][0]
+        jobs_summaries_pairs = sorted(
+            [
+                (S, J, datetime.strptime(J.dates.split("-")[0].strip(), "%m/%Y"))
+                for S in experience_summary.jobs
+                for J in experiences
+                if S.job_id == J.job_id
+            ],
+            key=lambda x: x[2],
+            reverse=True,
+        )
+        for summary, job, _ in jobs_summaries_pairs:
             company = self.escape_and_normalize(job.company)
             role = self.escape_and_normalize(job.position)
             dates = self.escape_and_normalize(job.dates)
@@ -134,7 +144,7 @@ class LatexGenerator:
                 "\\begin{itemize}[leftmargin=*,labelsep=0.5em,itemsep=-0.5em,topsep=0pt]",
             ]
 
-            for bullet in exp.bullets:
+            for bullet in summary.bullets:
                 bullet_text = self.escape_and_normalize(bullet)
                 block_lines.append(f"    \\item {bullet_text}")
 
@@ -195,11 +205,21 @@ class LatexGenerator:
     ) -> str:
         """Build education section as LaTeX matching original template."""
         latex = ""
+        schools_summaries_pairs = sorted(
+            [
+                (S, J, datetime.strptime(J.dates.split("-")[0].strip(), "%m/%Y"))
+                for S in summaries.schools
+                for J in schools
+                if S.school_id == J.school_id
+            ],
+            key=lambda x: x[2],
+            reverse=True,
+        )
         for summary in summaries.schools:
             school = [s for s in schools if s.school_id == summary.school_id][0]
             degree = self.escape_and_normalize(school.degree)
             school_name = self.escape_and_normalize(school.school_name)
-            dates = self.escape_and_normalize(school.date)
+            dates = self.escape_and_normalize(school.dates)
             courses = summary.courses
             dates_cell = self._format_header_dates(dates)
             row_break = "\\\\"
