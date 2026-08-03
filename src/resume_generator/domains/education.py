@@ -9,6 +9,6 @@ class Education(BaseModel):
     school_id: int = Field(default_factory=lambda: next(Education._id_counter))
     degree: str = Field(alias="degree")
     school_name: str = Field(alias="school name")
-    date: str = Field(alias="date")
+    dates: str = Field(alias="date")
     skills: list[str] = Field(alias="important skills")
     irrelevant_skills: list[str] = Field(alias="general skills")
