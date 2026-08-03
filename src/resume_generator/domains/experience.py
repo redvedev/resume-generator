@@ -1,7 +1,12 @@
+from itertools import count
+from typing import ClassVar
+
 from pydantic import BaseModel, ConfigDict, Field
 
 
 class Experience(BaseModel):
+    _id_counter: ClassVar[count] = count(1)
+    job_id: int = Field(default_factory=lambda: next(Experience._id_counter))
     company: str = Field(alias="company")
     position: str = Field(alias="position")
     dates: str = Field(alias="date")
