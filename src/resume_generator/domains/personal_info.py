@@ -9,3 +9,4 @@ class PersonalInfo(BaseModel):
     linkedin_preview_link: str = Field(alias="linkedin_preview")
     linkedin_actual_link: str = Field(alias="linkedin_url")
     website: str = Field(alias="website")
+    summary: str = Field(alias="summary")
