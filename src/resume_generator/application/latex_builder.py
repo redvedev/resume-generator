@@ -4,9 +4,11 @@ from typing import Any, Dict, List
 
 from resume_generator.application.agent_invoker import AgentInvoker
 from resume_generator.application.config import TEMPLATE_DIR
-from resume_generator.domains.agent_responses import (EducationResponse,
-                                                      ExperienceResponse,
-                                                      ProjectResponse)
+from resume_generator.domains.agent_responses import (
+    EducationResponse,
+    ExperienceResponse,
+    ProjectResponse,
+)
 from resume_generator.domains.education import Education
 from resume_generator.domains.experience import Experience
 from resume_generator.domains.project import Project
@@ -15,7 +17,8 @@ from resume_generator.domains.user import User
 
 logger = logging.getLogger(__name__)
 
-class LatexGenerator():
+
+class LatexGenerator:
     """Build LaTeX resume from structured data."""
 
     def __init__(self):
@@ -27,19 +30,19 @@ class LatexGenerator():
             return ""
 
         # Don't escape LaTeX commands
-        if text.startswith('\\'):
+        if text.startswith("\\"):
             return text
 
         replacements = {
-            '&': r'\&',
-            '%': r'\%',
-            '$': r'\$',
-            '#': r'\#',
-            '_': r'\_',
-            '{': r'\{',
-            '}': r'\}',
-            '~': r'\textasciitilde{}',
-            '^': r'\textasciicircum{}',
+            "&": r"\&",
+            "%": r"\%",
+            "$": r"\$",
+            "#": r"\#",
+            "_": r"\_",
+            "{": r"\{",
+            "}": r"\}",
+            "~": r"\textasciitilde{}",
+            "^": r"\textasciicircum{}",
         }
 
         for char, replacement in replacements.items():
@@ -70,15 +73,14 @@ class LatexGenerator():
     def _normalize_website(self, website: str) -> str:
         website = (website or "").strip()
         if website.startswith("https://"):
-            return website[len("https://"):]
+            return website[len("https://") :]
         if website.startswith("http://"):
-            return website[len("http://"):]
+            return website[len("http://") :]
         return website
 
     def _format_header_dates(self, dates: str) -> str:
         """Wrap header dates so PDF text extraction keeps them separated."""
         return f"\\mbox{{~{dates}~}}"
-
 
     def build_skills_section(self, skills: list[Skills]) -> str:
         """Build skills section as LaTeX tabular."""
@@ -90,7 +92,9 @@ class LatexGenerator():
 
         for skill in skills:
             category_escaped = self.escape_and_normalize(skill.skills_category)
-            skills_text = ", ".join([self.escape_and_normalize(s) for s in skill.skills])
+            skills_text = ", ".join(
+                [self.escape_and_normalize(s) for s in skill.skills]
+            )
             items.append(f"{category_escaped} & {skills_text}")
 
         if not items:
@@ -101,14 +105,16 @@ class LatexGenerator():
 
         return latex
 
-    def build_experience_section(self, experience_summary: ExperienceResponse, experiences: list[Experience]) -> str:
+    def build_experience_section(
+        self, experience_summary: ExperienceResponse, experiences: list[Experience]
+    ) -> str:
         """Build experience section as LaTeX."""
         if not experiences:
             return ""
 
         latex = ""
         for exp in experience_summary.jobs:
-            job = [e for e in experiences if e.job_id == exp.object_id][0]
+            job = [e for e in experiences if e.job_id == exp.job_id][0]
             company = self.escape_and_normalize(job.company)
             role = self.escape_and_normalize(job.position)
             dates = self.escape_and_normalize(job.dates)
@@ -137,7 +143,9 @@ class LatexGenerator():
 
         return latex
 
-    def build_projects_section(self, projects_summaries: ProjectResponse, projects: list[Project]) -> str:
+    def build_projects_section(
+        self, projects_summaries: ProjectResponse, projects: list[Project]
+    ) -> str:
         """Build projects section as LaTeX."""
         if not projects:
             return ""
@@ -145,48 +153,46 @@ class LatexGenerator():
         row_break = " \\\\"
         latex = ""
         for summary in projects_summaries.projects:
-            project = [p for p in projects if p.project_id == summary.object_id][0]
+            project = [p for p in projects if p.project_id == summary.project_id][0]
             name = self.escape_and_normalize(project.name)
             year = self.escape_and_normalize(project.year)
             project_type = self.escape_and_normalize(project.type.value)
-            tech = [self.escape_and_normalize(t) for t in project.technologies if t]
-            #metrics = self.escape_and_normalize(project.metrics)
-            description = self.escape_and_normalize(project.description)
-            #outcome = self.escape_and_normalize(project.outcome)
-            bullets = summary.bullets
-            header_line = f"\\noindent \\textbf{{{name}}} - {project_type}"
-            if year:
-                header_line += f" \\hfill {year}"
 
-            bullet_lines = []
-            for bullet in bullets:
-                bullet_lines.append(f"\\item {self.escape_and_normalize(bullet)}")
-            #if outcome:
-            #    if metrics and not description:
-            #        outcome = f"{outcome} (Metrics: {metrics})"
-            #    bullet_lines.append(f"\\item Outcome: {outcome}")
-
-            latex += header_line + row_break + "\n"
-            if description:
-                description_sentences = [
-                    sentence.strip()
-                    for sentence in re.split(r'(?<=[.!?])\s+', description)
-                    if sentence.strip()
-                ]
-            #    if metrics and description_sentences:
-            #        description_sentences[0] = f"{description_sentences[0]} (Metrics: {metrics})"
-                latex += "Description: " + " ".join(description_sentences) + row_break + "\n"
-            if tech:
-                latex += "Technologies: " + ", ".join(tech) + "\n"
+            # Header {Project name} - {Project type} {year}
+            latex += (
+                f"\\noindent \\textbf{{{name}}} - {project_type} \\hfill {year}"
+                + row_break
+                + "\n"
+            )
+            # Project description
+            latex += (
+                "\\textbf{Description}: "
+                + self.escape_and_normalize(summary.description)
+                + row_break
+                + "\n"
+            )
+            # Listed technologies used in the project
+            latex += (
+                "\\textbf{Technologies}: "
+                + ", ".join(
+                    [self.escape_and_normalize(t) for t in project.technologies if t]
+                )
+                + "\n"
+            )
 
             latex += "\\begin{itemize}[leftmargin=*,labelsep=0.5em,itemsep=-0.5em,topsep=0pt]\n"
-            for bullet_line in bullet_lines:
-                latex += f"    {bullet_line}\n"
+            # metrics = self.escape_and_normalize(project.metrics)
+            # outcome = self.escape_and_normalize(project.outcome)
+            for bullet in summary.bullets:
+                # TODO: If we have outcome / measures we append them here
+                latex += f"\\item {self.escape_and_normalize(bullet)}\n"
             latex += "\\end{itemize}\n\n"
 
         return latex
 
-    def build_education_section(self, summaries: EducationResponse, schools: list[Education]) -> str:
+    def build_education_section(
+        self, summaries: EducationResponse, schools: list[Education]
+    ) -> str:
         """Build education section as LaTeX matching original template."""
         latex = ""
         for summary in summaries.schools:
@@ -210,11 +216,15 @@ class LatexGenerator():
             ]
 
             if courses:
-                courses_text = ", ".join([self.escape_and_normalize(c) for c in courses])
-                block_lines.extend([
-                    "\\noindent",
-                    f"Relevant Coursework: {courses_text}",
-                ])
+                courses_text = ", ".join(
+                    [self.escape_and_normalize(c) for c in courses]
+                )
+                block_lines.extend(
+                    [
+                        "\\noindent",
+                        f"Relevant Coursework: {courses_text}",
+                    ]
+                )
 
             latex += "\n".join(block_lines) + "\n\n"
 
@@ -231,14 +241,7 @@ class LatexGenerator():
         if not template_path.exists():
             raise FileNotFoundError(f"Template not found at {template_path}")
 
-        template = template_path.read_text(encoding='utf-8')
-
-        # Build sections
-        # TODO: Construct skills, experience and shit from LLM response using pydantic validate method
-        skills_section = self.build_skills_section(user.skills)
-        experience_section = self.build_experience_section(agent_invoker.get_user_experience_summary(), user.experience)
-        projects_section = self.build_projects_section(agent_invoker.get_user_projects_summary(), user.projects)
-        education_section = self.build_education_section(agent_invoker.get_user_education_summary(), user.education)
+        template = template_path.read_text(encoding="utf-8")
 
         # Personal info
         personal = user.personal_info
@@ -247,30 +250,57 @@ class LatexGenerator():
         location = self.escape_latex(personal.location)
         email = self.escape_latex(personal.email)
         linkedin_preview = self.escape_latex(personal.linkedin_preview_link)
-        linkedin_url = self._normalize_website(self.escape_latex(personal.linkedin_actual_link))
-        website = self._normalize_website(self.escape_latex(self._normalize_website(personal.website)))
-        objective = self.escape_latex("Machine Learning Engineer and Master of Mathematics student with experience building and deploying production- grade ML models, RAG pipelines, and cloud-backed data solutions. Skilled in Python, PyTorch, AWS, and LLM integration. Eager to apply applied machine learning and scalable data engineering to complex production systems.") # TODO:
+        linkedin_url = self._normalize_website(
+            self.escape_latex(personal.linkedin_actual_link)
+        )
+        website = self._normalize_website(
+            self.escape_latex(self._normalize_website(personal.website))
+        )
 
-        objective_section = self.build_simple_body_section("Objective", objective)
-        education_section = self.build_simple_body_section("Education", education_section)
-        skills_section = self.build_simple_body_section("Skills", skills_section)
-        experience_section = self.build_simple_body_section("Experience", experience_section)
-        projects_section = self.build_simple_body_section("Projects", projects_section)
+        # Sections
+        objective_section = self.build_simple_body_section(
+            "Objective", self.escape_latex(personal.summary)
+        )
+
+        education_section = self.build_simple_body_section(
+            "Education",
+            self.build_education_section(
+                agent_invoker.get_user_education_summary(), user.education
+            ),
+        )
+
+        skills_section = self.build_simple_body_section(
+            "Skills", self.build_skills_section(user.skills)
+        )
+
+        experience_section = self.build_simple_body_section(
+            "Experience",
+            self.build_experience_section(
+                agent_invoker.get_user_experience_summary(), user.experience
+            ),
+        )
+
+        projects_section = self.build_simple_body_section(
+            "Projects",
+            self.build_projects_section(
+                agent_invoker.get_user_projects_summary(), user.projects
+            ),
+        )
 
         # Replace placeholders
         replacements = {
-            '{{NAME}}': name,
-            '{{PHONE}}': phone,
-            '{{LOCATION}}': location,
-            '{{EMAIL}}': email,
-            '{{LINKEDIN_PREVIEW}}': linkedin_preview,
-            '{{LINKEDIN_URL}}': linkedin_url,
-            '{{WEBSITE}}': website,
-            '{{OBJECTIVE_SECTION}}': objective_section,
-            '{{EDUCATION_SECTION}}': education_section,
-            '{{SKILLS_SECTION}}': skills_section,
-            '{{EXPERIENCE_SECTION}}': experience_section,
-            '{{PROJECTS_SECTION}}': projects_section
+            "{{NAME}}": name,
+            "{{PHONE}}": phone,
+            "{{LOCATION}}": location,
+            "{{EMAIL}}": email,
+            "{{LINKEDIN_PREVIEW}}": linkedin_preview,
+            "{{LINKEDIN_URL}}": linkedin_url,
+            "{{WEBSITE}}": website,
+            "{{OBJECTIVE_SECTION}}": objective_section,
+            "{{EDUCATION_SECTION}}": education_section,
+            "{{SKILLS_SECTION}}": skills_section,
+            "{{EXPERIENCE_SECTION}}": experience_section,
+            "{{PROJECTS_SECTION}}": projects_section,
         }
 
         rendered = template
