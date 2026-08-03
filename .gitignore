@@ -2,4 +2,4 @@
 .python-version
 .venv
 *__pycache__*
-/user_data/
+data
