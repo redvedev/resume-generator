@@ -1,0 +1,145 @@
+\documentclass{resume}
+
+\usepackage[left=0.4 in,top=0.4in,right=0.4 in,bottom=0.4in]{geometry}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{tabularx}
+\usepackage{ragged2e}
+\usepackage{array}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=blue,
+}
+
+\newcommand{\tab}[1]{\hspace{.2667\textwidth}\rlap{#1}} 
+\newcommand{\itab}[1]{\hspace{0em}\rlap{#1}}
+
+\name{Beniamin Deszert-Kłosowski}
+
+\address{+48 789 599 017 \\ Katowice, Poland} 
+\address{\href{mailto:beniamin.deszert@protonmail.com}{beniamin.deszert@protonmail.com} \\ \href{https://www.linkedin.com/in/beniamin-deszert-kłosowski-15b37425a/}{linkedin.com/in/beniamin-deszert-kłosowski} \\ \href{https://github.com/redvedev}{github.com/redvedev}}
+
+\begin{document}
+
+\begin{rSection}{Objective}
+Machine Learning and Data Engineer experienced in building production-grade ML models, ETL pipelines, and cloud-based architecture. Skilled in Python, PyTorch, Azure, AWS, and MLOps practices. Eager to apply scalable machine learning solutions and workflow optimization to support global data platforms.
+\end{rSection}
+
+
+\begin{rSection}{Education}
+\noindent
+\begin{tabular*}{\textwidth}{@{}l@{\extracolsep{\fill}}r@{}}
+\textbf{Master of Mathematics} & \mbox{~10/2025 - ongoing~} \\
+\end{tabular*}
+\noindent
+\begin{tabular*}{\textwidth}{@{}l@{\extracolsep{\fill}}r@{}}
+\textit{University of Silesia, Katowice} & \textit{} \\
+\end{tabular*}
+\noindent
+Relevant Coursework: Machine learning in Python, Data analysis in Python, Forecasting time series, Multidimensional statistics
+
+\noindent
+\begin{tabular*}{\textwidth}{@{}l@{\extracolsep{\fill}}r@{}}
+\textbf{Bachelor of Mathematics} & \mbox{~10/2021 - 11/2024~} \\
+\end{tabular*}
+\noindent
+\begin{tabular*}{\textwidth}{@{}l@{\extracolsep{\fill}}r@{}}
+\textit{University of Silesia, Katowice} & \textit{} \\
+\end{tabular*}
+\noindent
+Relevant Coursework: Machine learning in Python, Probability theory, Mathematical modeling in Medicine and Life Sciences, Statistics
+
+
+\end{rSection}
+
+
+\begin{rSection}{Skills}
+\begin{tabularx}{\textwidth}{@{}>{\bfseries}l@{\hspace{2ex}}>{\RaggedRight\arraybackslash}X@{}}
+Programming Languages & Python, SQL\\
+ML/AI Frameworks & PyTorch, TensorFlow, scikit-learn, Hugging Face, LangChain, LangGraph, MLFlow, NLP\\
+Cloud \& DevOps & AWS, GCP, Azure, Docker, Kubernetes, CI/CD\\
+Data Engineering & ETL, Data Pipelines, NumPy, Pandas, Azure Data Factory\\
+Other Tools & Git, Linux, FastAPI, REST APIs, Elasticsearch, PostgreSQL, MongoDB, Redis\\
+Languages & Polish (Native), English (C1), German (A2)
+\end{tabularx}\\
+\end{rSection}
+
+
+\begin{rSection}{Experience}
+\noindent
+\begin{tabular*}{\textwidth}{@{}l@{\extracolsep{\fill}}r@{}}
+\textbf{GenAI/ML Engineer} & \mbox{~01/2026 - ongoing~} \\
+\end{tabular*}
+\noindent
+\begin{tabular*}{\textwidth}{@{}l@{\extracolsep{\fill}}r@{}}
+\textit{PwC} & \textit{Remote} \\
+\end{tabular*}
+\begin{itemize}[leftmargin=*,labelsep=0.5em,itemsep=-0.5em,topsep=0pt]
+    \item Integrated GenAI solutions and RAG clients connected with SharePoint documentation using Python, Azure, and Langflow.
+    \item Engineered robust ETL pipelines utilizing Azure Data Factory to process large datasets and support backend architecture.
+    \item Deployed LLM-based chatbot functionalities to establish knowledge bases for support teams.
+    \item Modified open-source software and developed cost-saving gateways for shared computing resources, debugging memory leaks to improve system stability.
+\end{itemize}
+
+\noindent
+\begin{tabular*}{\textwidth}{@{}l@{\extracolsep{\fill}}r@{}}
+\textbf{Machine Learning Engineer} & \mbox{~11/2024 - 12/2025~} \\
+\end{tabular*}
+\noindent
+\begin{tabular*}{\textwidth}{@{}l@{\extracolsep{\fill}}r@{}}
+\textit{Binderless} & \textit{Remote} \\
+\end{tabular*}
+\begin{itemize}[leftmargin=*,labelsep=0.5em,itemsep=-0.5em,topsep=0pt]
+    \item Engineered and deployed ML models across production environments (Python, PyTorch, TensorFlow, SciKit-Learn, AWS, Linux, MLFlow), reducing client operational time by 53\%.
+    \item Fine-tuned core NLP models, increasing key performance metrics (F1-score) by approximately 10\%.
+    \item Developed RAG and Agentic Document Extraction pipelines to build LLM-based chatbots for construction site CDE.
+    \item Handled the entire model lifecycle process and maintained code quality with CI/CD integration.
+\end{itemize}
+
+\noindent
+\begin{tabular*}{\textwidth}{@{}l@{\extracolsep{\fill}}r@{}}
+\textbf{Junior Data Engineer} & \mbox{~03/2023 - 11/2024~} \\
+\end{tabular*}
+\noindent
+\begin{tabular*}{\textwidth}{@{}l@{\extracolsep{\fill}}r@{}}
+\textit{DXC Technology} & \textit{Remote} \\
+\end{tabular*}
+\begin{itemize}[leftmargin=*,labelsep=0.5em,itemsep=-0.5em,topsep=0pt]
+    \item Supported maintenance and modification of existing data pipelines in Azure Data Factory and validated data in Azure Data Lake Storage.
+    \item Developed Python scripts with Pandas and NumPy to transform data and fix missing metadata in 20k+ client documents in production.
+    \item Wrote SQL queries and cleaned datasets for PowerBI reports in collaboration with Data Analysis teams.
+\end{itemize}
+
+
+\end{rSection}
+
+
+\begin{rSection}{Projects}
+\noindent \textbf{Binderless CDE Platform} - work \hfill 2025 \\
+Description: A Common Data Environment (CDE) platform designed to centralize construction project documentation into a single, real-time, cloud-based digital workspace with automated workflows. \\
+Technologies: Python, PyTorch, TensorFlow, SciKit-Learn, AWS, ElasticSearch, NumPy, Pandas
+\begin{itemize}[leftmargin=*,labelsep=0.5em,itemsep=-0.5em,topsep=0pt]
+    \item Developed and deployed full LLM-based RAG and ETL pipelines, reducing client operational time by 53\% and increasing model F1-score by approximately 10\% via fine-tuning.
+\end{itemize}
+
+\noindent \textbf{DVS Module Development (Data Validation Solution)} - work \hfill 2026 \\
+Description: A submodule within the larger Data Operating Suite (DOS) system designed for data validation, ETL execution, and shared computing resource optimization. \\
+Technologies: Python, Open-Source Software, ETL Pipelines, LLM Integration, DevOps Tools
+\begin{itemize}[leftmargin=*,labelsep=0.5em,itemsep=-0.5em,topsep=0pt]
+    \item Modified open-source software, designed ETL pipelines, and developed a gateway mechanism integrating Large Language Models to reduce shared computing costs and resolve memory leaks.
+\end{itemize}
+
+\noindent \textbf{Listelle Support Platform} - work \hfill 2026 \\
+Description: An intelligent chatbot and knowledge base platform designed to assist support teams in resolving client cases through document indexing and RAG integrations. \\
+Technologies: Python, Azure Data Factory, Azure, RAG, LLMs, SharePoint, Langflow, Backend Development
+\begin{itemize}[leftmargin=*,labelsep=0.5em,itemsep=-0.5em,topsep=0pt]
+    \item Built a custom backend application using Azure Data Factory, SharePoint, and Langflow to automatically index documentation and integrate LLMs for contextual insights, reducing support response time.
+\end{itemize}
+
+
+\end{rSection}
+
+
+\end{document}
