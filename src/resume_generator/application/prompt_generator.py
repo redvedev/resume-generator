@@ -4,7 +4,6 @@ from resume_generator.domains.education import Education
 from resume_generator.domains.experience import Experience
 from resume_generator.domains.project import Project
 from resume_generator.domains.skills import Skills
-from resume_generator.domains.user import User
 from resume_generator.prompt_templates import (
     EDUCATION_SCHOOL_DESCRIPTION_TEMPLATE,
     EDUCATION_SELECTION_TEMPLATE,
@@ -16,14 +15,13 @@ from resume_generator.prompt_templates import (
 
 
 class PromptGenerator:
-    def __init__(self, job_description: str, user: User):
+    def __init__(self, job_description: str):
         self.job_description = job_description
-        self.user = user
 
-    def get_llm_prompt_work(self) -> str:
+    def get_llm_prompt_work(self, experience: list[Experience]) -> str:
         experience_template = PromptTemplate.from_template(JOB_DESCRIPTION_TEMPLATE)
         experiences = []
-        for job in self.user.experience:
+        for job in experience:
             tasks = "\n".join("- " + task for task in job.achievements)
             impact = "\n".join("- " + imp for imp in job.impact)
             tech_stack = ", ".join(job.technologies)
@@ -44,12 +42,12 @@ class PromptGenerator:
             job_description=self.job_description, work_experience="\n".join(experiences)
         )
 
-    def get_llm_prompt_education(self) -> str:
+    def get_llm_prompt_education(self, schools: list[Education]) -> str:
         school_description_template = PromptTemplate.from_template(
             EDUCATION_SCHOOL_DESCRIPTION_TEMPLATE
         )
         education = []
-        for school in self.user.education:
+        for school in schools:
             education.append(
                 school_description_template.format(
                     school_id=school.school_id,
@@ -63,10 +61,10 @@ class PromptGenerator:
             job_description=self.job_description, education="\n".join(education)
         )
 
-    def get_llm_prompt_projects(self) -> str:
+    def get_llm_prompt_projects(self, projects_list: list[Project]) -> str:
         project_template = PromptTemplate.from_template(PROJECT_DESCRIPTION_TEMPLATE)
         projects = []
-        for project in self.user.projects:
+        for project in projects_list:
             actions = "\n".join("- " + task for task in project.actions)
             outcome = "\n".join("- " + imp for imp in project.outcome)
             metrices = "\n".join("- " + imp for imp in project.metrics)

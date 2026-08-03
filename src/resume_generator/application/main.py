@@ -13,10 +13,8 @@ def main():
 
     offer = "We are looking for data analytics in R"
     # TODO: Add filtering user skills to the offer according to the text, and make a new user you will send here
-    prompt_generator = PromptGenerator(offer, user)
+    prompt_generator = PromptGenerator(offer)
     agent = AgentInvoker(prompt_generator)
-    education_summaries = agent.get_user_education_summary()
-    print(education_summaries)
 
 
 if __name__ == "__main__":

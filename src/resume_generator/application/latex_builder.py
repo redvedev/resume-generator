@@ -5,11 +5,9 @@ from typing import Any, Dict, List
 
 from resume_generator.application.agent_invoker import AgentInvoker
 from resume_generator.application.config import TEMPLATE_DIR
-from resume_generator.domains.agent_responses import (
-    EducationResponse,
-    ExperienceResponse,
-    ProjectResponse,
-)
+from resume_generator.domains.agent_responses import (EducationResponse,
+                                                      ExperienceResponse,
+                                                      ProjectResponse)
 from resume_generator.domains.education import Education
 from resume_generator.domains.experience import Experience
 from resume_generator.domains.project import Project
@@ -19,10 +17,8 @@ from resume_generator.domains.user import User
 logger = logging.getLogger(__name__)
 
 
-class LatexGenerator:
-    """Build LaTeX resume from structured data."""
-
-    def __init__(self):
+class LatexNormalizer:
+    def __init__(self) -> None:
         pass
 
     def escape_latex(self, text: str) -> str:
@@ -65,12 +61,6 @@ class LatexGenerator:
         """Normalize unicode punctuation before LaTeX escaping."""
         return self.escape_latex(self.normalize_text(text))
 
-    def _wrap_section(self, title: str, body: str) -> str:
-        if not body or not body.strip():
-            return ""
-
-        return f"\\begin{{rSection}}{{{title}}}\n{body}\n\\end{{rSection}}\n"
-
     def _normalize_website(self, website: str) -> str:
         website = (website or "").strip()
         if website.startswith("https://"):
@@ -78,6 +68,39 @@ class LatexGenerator:
         if website.startswith("http://"):
             return website[len("http://") :]
         return website
+
+class LatexPreprocessor:
+    def __init__(self, row_break: str) -> None:
+        self.text_normalizer = LatexNormalizer()
+        self.row_break = row_break
+
+    def prepare_skills_latex(self, skills: list[Skills]) -> str:
+        items = []
+        for skill in skills:
+            category_escaped = self.text_normalizer.escape_and_normalize(skill.skills_category)
+            skills_text = ", ".join(
+                [self.text_normalizer.escape_and_normalize(s) for s in skill.skills]
+            )
+            items.append(f"{category_escaped} & {skills_text}")
+        row_break = f"{self.row_break}\n"
+        return row_break.join(items)
+
+
+class LatexGenerator:
+    """Build LaTeX resume from structured data."""
+
+    def __init__(self):
+        self.row_break = "\\\\"
+        self.text_normalizer = LatexNormalizer()
+        self.latex_preprocessor = LatexPreprocessor(self.row_break)
+
+
+    def _wrap_section(self, title: str, body: str) -> str:
+        if not body or not body.strip():
+            return ""
+
+        return f"\\begin{{rSection}}{{{title}}}\n{body}\n\\end{{rSection}}\n"
+
 
     def _format_header_dates(self, dates: str) -> str:
         """Wrap header dates so PDF text extraction keeps them separated."""
@@ -88,23 +111,10 @@ class LatexGenerator:
         if not skills:
             return ""
 
-        latex = "\\begin{tabularx}{\\textwidth}{@{}>{\\bfseries}l@{\\hspace{2ex}}>{\\RaggedRight\\arraybackslash}X@{}}\n"
-        items = []
-
-        for skill in skills:
-            category_escaped = self.escape_and_normalize(skill.skills_category)
-            skills_text = ", ".join(
-                [self.escape_and_normalize(s) for s in skill.skills]
-            )
-            items.append(f"{category_escaped} & {skills_text}")
-
-        if not items:
-            return ""
-
-        latex += "\\\\\n".join(items)
-        latex += "\n\\end{tabularx}\\\\"
-
-        return latex
+        begin = r"\begin{tabularx}{\textwidth}{@{}>{\bfseries}l@{\hspace{2ex}}>{\RaggedRight\arraybackslash}X@{}}"
+        skills_listed = self.latex_preprocessor.prepare_skills_latex(skills)
+        end = r"\end{tabularx}"
+        return f"{begin}\n{skills_listed}\n{end}"
 
     def build_experience_section(
         self, experience_summary: ExperienceResponse, experiences: list[Experience]
@@ -125,10 +135,10 @@ class LatexGenerator:
             reverse=True,
         )
         for summary, job, _ in jobs_summaries_pairs:
-            company = self.escape_and_normalize(job.company)
-            role = self.escape_and_normalize(job.position)
-            dates = self.escape_and_normalize(job.dates)
-            location = self.escape_and_normalize(job.location)
+            company = self.text_normalizer.escape_and_normalize(job.company)
+            role = self.text_normalizer.escape_and_normalize(job.position)
+            dates = self.text_normalizer.escape_and_normalize(job.dates)
+            location = self.text_normalizer.escape_and_normalize(job.location)
             dates_cell = self._format_header_dates(dates)
             row_break = "\\\\"
 
@@ -145,7 +155,7 @@ class LatexGenerator:
             ]
 
             for bullet in summary.bullets:
-                bullet_text = self.escape_and_normalize(bullet)
+                bullet_text = self.text_normalizer.escape_and_normalize(bullet)
                 block_lines.append(f"    \\item {bullet_text}")
 
             block_lines.append("\\end{itemize}")
@@ -164,9 +174,9 @@ class LatexGenerator:
         latex = ""
         for summary in projects_summaries.projects:
             project = [p for p in projects if p.project_id == summary.project_id][0]
-            name = self.escape_and_normalize(project.name)
-            year = self.escape_and_normalize(project.year)
-            project_type = self.escape_and_normalize(project.type.value)
+            name = self.text_normalizer.escape_and_normalize(project.name)
+            year = self.text_normalizer.escape_and_normalize(project.year)
+            project_type = self.text_normalizer.escape_and_normalize(project.type.value)
 
             # Header {Project name} - {Project type} {year}
             latex += (
@@ -177,7 +187,7 @@ class LatexGenerator:
             # Project description
             latex += (
                 "\\textbf{Description}: "
-                + self.escape_and_normalize(summary.description)
+                + self.text_normalizer.escape_and_normalize(summary.description)
                 + row_break
                 + "\n"
             )
@@ -185,7 +195,7 @@ class LatexGenerator:
             latex += (
                 "\\textbf{Technologies}: "
                 + ", ".join(
-                    [self.escape_and_normalize(t) for t in project.technologies if t]
+                    [self.text_normalizer.escape_and_normalize(t) for t in project.technologies if t]
                 )
                 + "\n"
             )
@@ -195,7 +205,7 @@ class LatexGenerator:
             # outcome = self.escape_and_normalize(project.outcome)
             for bullet in summary.bullets:
                 # TODO: If we have outcome / measures we append them here
-                latex += f"\\item {self.escape_and_normalize(bullet)}\n"
+                latex += f"\\item {self.text_normalizer.escape_and_normalize(bullet)}\n"
             latex += "\\end{itemize}\n\n"
 
         return latex
@@ -217,9 +227,9 @@ class LatexGenerator:
         )
         for summary in summaries.schools:
             school = [s for s in schools if s.school_id == summary.school_id][0]
-            degree = self.escape_and_normalize(school.degree)
-            school_name = self.escape_and_normalize(school.school_name)
-            dates = self.escape_and_normalize(school.dates)
+            degree = self.text_normalizer.escape_and_normalize(school.degree)
+            school_name = self.text_normalizer.escape_and_normalize(school.school_name)
+            dates = self.text_normalizer.escape_and_normalize(school.dates)
             courses = summary.courses
             dates_cell = self._format_header_dates(dates)
             row_break = "\\\\"
@@ -237,7 +247,7 @@ class LatexGenerator:
 
             if courses:
                 courses_text = ", ".join(
-                    [self.escape_and_normalize(c) for c in courses]
+                    [self.text_normalizer.escape_and_normalize(c) for c in courses]
                 )
                 block_lines.extend(
                     [
@@ -265,27 +275,27 @@ class LatexGenerator:
 
         # Personal info
         personal = user.personal_info
-        name = self.escape_latex(personal.name)
-        phone = self.escape_latex(personal.phone_number)
-        location = self.escape_latex(personal.location)
-        email = self.escape_latex(personal.email)
-        linkedin_preview = self.escape_latex(personal.linkedin_preview_link)
-        linkedin_url = self._normalize_website(
-            self.escape_latex(personal.linkedin_actual_link)
+        name = self.text_normalizer.escape_latex(personal.name)
+        phone = self.text_normalizer.escape_latex(personal.phone_number)
+        location = self.text_normalizer.escape_latex(personal.location)
+        email = self.text_normalizer.escape_latex(personal.email)
+        linkedin_preview = self.text_normalizer.escape_latex(personal.linkedin_preview_link)
+        linkedin_url = self.text_normalizer._normalize_website(
+            self.text_normalizer.escape_latex(personal.linkedin_actual_link)
         )
-        website = self._normalize_website(
-            self.escape_latex(self._normalize_website(personal.website))
+        website = self.text_normalizer._normalize_website(
+            self.text_normalizer.escape_latex(self.text_normalizer._normalize_website(personal.website))
         )
 
         # Sections
         objective_section = self.build_simple_body_section(
-            "Objective", self.escape_latex(personal.summary)
+            "Objective", self.text_normalizer.escape_latex(personal.summary)
         )
 
         education_section = self.build_simple_body_section(
             "Education",
             self.build_education_section(
-                agent_invoker.get_user_education_summary(), user.education
+                agent_invoker.get_user_education_summary(user.education), user.education
             ),
         )
 
@@ -296,14 +306,14 @@ class LatexGenerator:
         experience_section = self.build_simple_body_section(
             "Experience",
             self.build_experience_section(
-                agent_invoker.get_user_experience_summary(), user.experience
+                agent_invoker.get_user_experience_summary(user.experience), user.experience
             ),
         )
 
         projects_section = self.build_simple_body_section(
             "Projects",
             self.build_projects_section(
-                agent_invoker.get_user_projects_summary(), user.projects
+                agent_invoker.get_user_projects_summary(user.projects), user.projects
             ),
         )
 

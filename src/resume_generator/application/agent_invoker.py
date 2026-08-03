@@ -5,6 +5,9 @@ from resume_generator.domains.agent_responses import (
     ExperienceResponse,
     ProjectResponse,
 )
+from resume_generator.domains.education import Education
+from resume_generator.domains.experience import Experience
+from resume_generator.domains.project import Project
 
 
 class AgentInvoker:
@@ -12,8 +15,10 @@ class AgentInvoker:
         self.agent = llm_agent()
         self.prompt_generator = prompt_generator
 
-    def get_user_experience_summary(self) -> ExperienceResponse:
-        prompt = self.prompt_generator.get_llm_prompt_work()
+    def get_user_experience_summary(
+        self, experience: list[Experience]
+    ) -> ExperienceResponse:
+        prompt = self.prompt_generator.get_llm_prompt_work(experience)
         model = self.agent.with_structured_output(ExperienceResponse)
         response = model.invoke(prompt)
         if type(response) == ExperienceResponse:
@@ -22,16 +27,16 @@ class AgentInvoker:
             "Experience response from LLM Doesn't match format: ", response
         )
 
-    def get_user_projects_summary(self) -> ProjectResponse:
-        prompt = self.prompt_generator.get_llm_prompt_projects()
+    def get_user_projects_summary(self, projects: list[Project]) -> ProjectResponse:
+        prompt = self.prompt_generator.get_llm_prompt_projects(projects)
         model = self.agent.with_structured_output(ProjectResponse)
         response = model.invoke(prompt)
         if type(response) == ProjectResponse:
             return response
         raise RuntimeError("Project response from LLM Doesn't match format: ", response)
 
-    def get_user_education_summary(self) -> EducationResponse:
-        prompt = self.prompt_generator.get_llm_prompt_education()
+    def get_user_education_summary(self, schools: list[Education]) -> EducationResponse:
+        prompt = self.prompt_generator.get_llm_prompt_education(schools)
         model = self.agent.with_structured_output(EducationResponse)
         response = model.invoke(prompt)
         if type(response) == EducationResponse:
