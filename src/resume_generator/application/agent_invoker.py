@@ -34,14 +34,18 @@ class AgentInvoker:
     def get_user_experience_summary(self):
         prompt = self.prompt_generator.get_llm_prompt_work()
         model = self.agent.with_structured_output(ExperienceResponse)
+        response = model.invoke(prompt)
+        jobs = self.prompt_generator.user.experience
         return model.invoke(prompt)
 
     def get_user_projects_summary(self):
         prompt = self.prompt_generator.get_llm_prompt_projects()
         model = self.agent.with_structured_output(ProjectResponse)
+        response = model.invoke(prompt)
         return model.invoke(prompt)
 
     def get_user_education_summary(self):
         prompt = self.prompt_generator.get_llm_prompt_education()
         model = self.agent.with_structured_output(EducationResponse)
+        response = model.invoke(prompt)
         return model.invoke(prompt)

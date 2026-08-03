@@ -14,7 +14,8 @@ dependencies = [
     "lmstudio (>=1.5.0,<2.0.0)",
     "google-genai (>=2.13.0,<3.0.0)",
     "dotenv (>=0.9.9,<0.10.0)",
-    "langchain-google-genai (>=4.3.2,<5.0.0)"
+    "langchain-google-genai (>=4.3.2,<5.0.0)",
+    "langchain-text-splitters (>=1.1.2,<2.0.0)"
 ]
 
 [build-system]
