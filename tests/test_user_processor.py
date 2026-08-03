@@ -10,7 +10,7 @@ from resume_generator.ports.user_processor import UserDataReader
 
 @pytest.fixture
 def user_processor() -> UserDataReader:
-    data_path = Path("user_data") / "personal_data"
+    data_path = Path("data") / "personal_data"
     return JsonUserReader(data_path)
 
 
