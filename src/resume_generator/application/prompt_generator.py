@@ -23,13 +23,13 @@ class PromptGenerator:
     def get_llm_prompt_work(self) -> str:
         experience_template = PromptTemplate.from_template(JOB_DESCRIPTION_TEMPLATE)
         experiences = []
-        for job_id, job in enumerate(self.user.experience):
+        for job in self.user.experience:
             tasks = "\n".join("- " + task for task in job.achievements)
             impact = "\n".join("- " + imp for imp in job.impact)
             tech_stack = ", ".join(job.technologies)
             experiences.append(
                 experience_template.format(
-                    job_id=job_id,
+                    job_id=job.job_id,
                     summary=job.summary,
                     tasks=tasks,
                     impact=impact,
@@ -49,10 +49,10 @@ class PromptGenerator:
             EDUCATION_SCHOOL_DESCRIPTION_TEMPLATE
         )
         education = []
-        for school_id, school in enumerate(self.user.education):
+        for school in self.user.education:
             education.append(
                 school_description_template.format(
-                    school_id=school_id,
+                    school_id=school.school_id,
                     relevant_courses=", ".join(school.skills),
                     irrelevant_courses=", ".join(school.irrelevant_skills),
                 )
@@ -66,14 +66,14 @@ class PromptGenerator:
     def get_llm_prompt_projects(self) -> str:
         project_template = PromptTemplate.from_template(PROJECT_DESCRIPTION_TEMPLATE)
         projects = []
-        for project_id, project in enumerate(self.user.projects):
+        for project in self.user.projects:
             actions = "\n".join("- " + task for task in project.actions)
             outcome = "\n".join("- " + imp for imp in project.outcome)
             metrices = "\n".join("- " + imp for imp in project.metrics)
             tech_stack = ", ".join(project.technologies)
             projects.append(
                 project_template.format(
-                    project_id=project_id,
+                    project_id=project.project_id,
                     project_name=project.name,
                     project_type=project.type.value,
                     project_description=project.description,
