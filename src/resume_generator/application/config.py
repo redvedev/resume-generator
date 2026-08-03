@@ -4,7 +4,7 @@ import logging
 from pathlib import Path
 
 # File paths
-DATA_DIR = Path("user_data")
+DATA_DIR = Path("data")
 PERSONAL_INFO_DIR = DATA_DIR / "personal_data"
 TEMPLATE_DIR = DATA_DIR / "template"
 # OUTPUT_DIR = Path("data/output")
