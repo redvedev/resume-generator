@@ -2,10 +2,16 @@ import logging
 import re
 from typing import Any, Dict, List
 
+from resume_generator.application.agent_invoker import AgentInvoker
 from resume_generator.application.config import TEMPLATE_DIR
+from resume_generator.domains.agent_responses import (EducationResponse,
+                                                      ExperienceResponse,
+                                                      ProjectResponse)
+from resume_generator.domains.education import Education
 from resume_generator.domains.experience import Experience
+from resume_generator.domains.project import Project
 from resume_generator.domains.skills import Skills
-from resume_generator.ports.user_processor import UserProcessor
+from resume_generator.domains.user import User
 
 logger = logging.getLogger(__name__)
 
@@ -73,6 +79,7 @@ class LatexGenerator():
         """Wrap header dates so PDF text extraction keeps them separated."""
         return f"\\mbox{{~{dates}~}}"
 
+
     def build_skills_section(self, skills: list[Skills]) -> str:
         """Build skills section as LaTeX tabular."""
         if not skills:
@@ -94,17 +101,18 @@ class LatexGenerator():
 
         return latex
 
-    def build_experience_section(self, experiences: list[Experience], bullets: list[str]) -> str:
+    def build_experience_section(self, experience_summary: ExperienceResponse, experiences: list[Experience]) -> str:
         """Build experience section as LaTeX."""
         if not experiences:
             return ""
 
         latex = ""
-        for exp in experiences:
-            company = self.escape_and_normalize(exp.company)
-            role = self.escape_and_normalize(exp.position)
-            dates = self.escape_and_normalize(exp.dates)
-            location = self.escape_and_normalize(exp.location)
+        for exp in experience_summary.jobs:
+            job = [e for e in experiences if e.job_id == exp.object_id][0]
+            company = self.escape_and_normalize(job.company)
+            role = self.escape_and_normalize(job.position)
+            dates = self.escape_and_normalize(job.dates)
+            location = self.escape_and_normalize(job.location)
             dates_cell = self._format_header_dates(dates)
             row_break = "\\\\"
 
@@ -120,7 +128,7 @@ class LatexGenerator():
                 "\\begin{itemize}[leftmargin=*,labelsep=0.5em,itemsep=-0.5em,topsep=0pt]",
             ]
 
-            for bullet in bullets:
+            for bullet in exp.bullets:
                 bullet_text = self.escape_and_normalize(bullet)
                 block_lines.append(f"    \\item {bullet_text}")
 
@@ -129,22 +137,23 @@ class LatexGenerator():
 
         return latex
 
-    def build_projects_section(self, projects: List[Dict]) -> str:
+    def build_projects_section(self, projects_summaries: ProjectResponse, projects: list[Project]) -> str:
         """Build projects section as LaTeX."""
         if not projects:
             return ""
 
         row_break = " \\\\"
         latex = ""
-        for project in projects:
-            name = self.escape_and_normalize(project.get('name', 'Unknown'))
-            year = self.escape_and_normalize(project.get('year', ''))
-            project_type = self.escape_and_normalize(project.get('type', ''))
-            tech = [self.escape_and_normalize(t) for t in project.get('tech', []) if t]
-            metrics = self.escape_and_normalize(project.get('metrics', ''))
-            description = self.escape_and_normalize(project.get('description', ''))
-            outcome = self.escape_and_normalize(project.get('outcome', ''))
-            bullets = project.get('bullets', [])
+        for summary in projects_summaries.projects:
+            project = [p for p in projects if p.project_id == summary.object_id][0]
+            name = self.escape_and_normalize(project.name)
+            year = self.escape_and_normalize(project.year)
+            project_type = self.escape_and_normalize(project.type.value)
+            tech = [self.escape_and_normalize(t) for t in project.technologies if t]
+            #metrics = self.escape_and_normalize(project.metrics)
+            description = self.escape_and_normalize(project.description)
+            #outcome = self.escape_and_normalize(project.outcome)
+            bullets = summary.bullets
             header_line = f"\\noindent \\textbf{{{name}}} - {project_type}"
             if year:
                 header_line += f" \\hfill {year}"
@@ -152,10 +161,10 @@ class LatexGenerator():
             bullet_lines = []
             for bullet in bullets:
                 bullet_lines.append(f"\\item {self.escape_and_normalize(bullet)}")
-            if outcome:
-                if metrics and not description:
-                    outcome = f"{outcome} (Metrics: {metrics})"
-                bullet_lines.append(f"\\item Outcome: {outcome}")
+            #if outcome:
+            #    if metrics and not description:
+            #        outcome = f"{outcome} (Metrics: {metrics})"
+            #    bullet_lines.append(f"\\item Outcome: {outcome}")
 
             latex += header_line + row_break + "\n"
             if description:
@@ -164,8 +173,8 @@ class LatexGenerator():
                     for sentence in re.split(r'(?<=[.!?])\s+', description)
                     if sentence.strip()
                 ]
-                if metrics and description_sentences:
-                    description_sentences[0] = f"{description_sentences[0]} (Metrics: {metrics})"
+            #    if metrics and description_sentences:
+            #        description_sentences[0] = f"{description_sentences[0]} (Metrics: {metrics})"
                 latex += "Description: " + " ".join(description_sentences) + row_break + "\n"
             if tech:
                 latex += "Technologies: " + ", ".join(tech) + "\n"
@@ -177,18 +186,15 @@ class LatexGenerator():
 
         return latex
 
-    def build_education_section(self, education: List[Dict]) -> str:
+    def build_education_section(self, summaries: EducationResponse, schools: list[Education]) -> str:
         """Build education section as LaTeX matching original template."""
-        if not education:
-            return ""
-
         latex = ""
-        for entry in education:
-            degree = self.escape_and_normalize(entry.get('degree', 'Unknown'))
-            school = self.escape_and_normalize(entry.get('school', 'Unknown'))
-            dates = self.escape_and_normalize(entry.get('dates', 'Unknown'))
-            location = self.escape_and_normalize(entry.get('location', ''))
-            courses = entry.get('courses', [])
+        for summary in summaries.schools:
+            school = [s for s in schools if s.school_id == summary.school_id][0]
+            degree = self.escape_and_normalize(school.degree)
+            school_name = self.escape_and_normalize(school.school_name)
+            dates = self.escape_and_normalize(school.date)
+            courses = summary.courses
             dates_cell = self._format_header_dates(dates)
             row_break = "\\\\"
 
@@ -199,7 +205,7 @@ class LatexGenerator():
                 "\\end{tabular*}",
                 "\\noindent",
                 "\\begin{tabular*}{\\textwidth}{@{}l@{\\extracolsep{\\fill}}r@{}}",
-                f"\\textit{{{school}}} & \\textit{{{location}}} {row_break}",
+                f"\\textit{{{school_name}}} {row_break}",
                 "\\end{tabular*}",
             ]
 
@@ -218,7 +224,7 @@ class LatexGenerator():
         """Build a section only when its body is non-empty."""
         return self._wrap_section(title, body)
 
-    def generate_tex(self, user_processor: UserProcessor, llm_response: Dict[str, Any]) -> str:
+    def generate_tex(self, user: User, agent_invoker: AgentInvoker) -> str:
         """Generate complete LaTeX from data."""
         # Load template
         template_path = TEMPLATE_DIR / "main.tex"
@@ -229,13 +235,13 @@ class LatexGenerator():
 
         # Build sections
         # TODO: Construct skills, experience and shit from LLM response using pydantic validate method
-        skills_section = self.build_skills_section(llm_response.get('skills', {}))
-        experience_section = self.build_experience_section(llm_response.get('experience', []))
-        projects_section = self.build_projects_section(llm_response.get('projects', []))
-        education_section = self.build_education_section(llm_response.get('education', []))
+        skills_section = self.build_skills_section(user.skills)
+        experience_section = self.build_experience_section(agent_invoker.get_user_experience_summary(), user.experience)
+        projects_section = self.build_projects_section(agent_invoker.get_user_projects_summary(), user.projects)
+        education_section = self.build_education_section(agent_invoker.get_user_education_summary(), user.education)
 
         # Personal info
-        personal = user_processor.get_user_personal_info()
+        personal = user.personal_info
         name = self.escape_latex(personal.name)
         phone = self.escape_latex(personal.phone_number)
         location = self.escape_latex(personal.location)
@@ -243,7 +249,7 @@ class LatexGenerator():
         linkedin_preview = self.escape_latex(personal.linkedin_preview_link)
         linkedin_url = self._normalize_website(self.escape_latex(personal.linkedin_actual_link))
         website = self._normalize_website(self.escape_latex(self._normalize_website(personal.website)))
-        objective = self.escape_latex(llm_response.get('objective', 'No objective provided.'))
+        objective = self.escape_latex("Machine Learning Engineer and Master of Mathematics student with experience building and deploying production- grade ML models, RAG pipelines, and cloud-backed data solutions. Skilled in Python, PyTorch, AWS, and LLM integration. Eager to apply applied machine learning and scalable data engineering to complex production systems.") # TODO:
 
         objective_section = self.build_simple_body_section("Objective", objective)
         education_section = self.build_simple_body_section("Education", education_section)
