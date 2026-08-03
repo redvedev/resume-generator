@@ -1,9 +1,10 @@
 {
-    "name": "John Doe",
-    "phone": "+48 123 456 789",
-    "location": "Warsaw, Poland",
-    "email": "john.doe@domain.com",
-    "linkedin_preview": "LINK_PREVIEW",
-    "linkedin_url": "https://www.linkedin.com/in/actual-user-link",
-    "website": "https://github.com/redvedev"
+  "name": "John Doe",
+  "phone": "+48 123 456 789",
+  "location": "Warsaw, Poland",
+  "email": "john.doe@domain.com",
+  "linkedin_preview": "LINK_PREVIEW",
+  "linkedin_url": "https://www.linkedin.com/in/actual-user-link",
+  "website": "https://github.com/redvedev",
+  "summary" : "Data scientist (DEFAULT FILL FROM JSON"
 }
