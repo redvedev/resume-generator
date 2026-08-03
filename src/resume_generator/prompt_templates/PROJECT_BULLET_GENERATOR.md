@@ -102,11 +102,13 @@ Respond with nothing else but a valid json. Skip everything except a single JSON
 [
     {{
         "id" : 1,
-        "bullets" : [list of strings which are the bullet points about my project]
+        "bullets" : [list of strings which are the bullet points about my project],
+        "description" "1-3 sentences describing what this project was, it's purpose and general description"
     }},
     {{
         "id" : 2,
-        "bullets" : [list of strings which are the bullet points about my project]
+        "bullets" : [list of strings which are the bullet points about my project],
+        "description" "1-3 sentences describing what this project was, it's purpose and general description"
     }}
 ]
 ```
