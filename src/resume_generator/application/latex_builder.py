@@ -14,7 +14,7 @@ class LatexGenerator:
     def __init__(self, agent: AgentInvoker):
         self.latex_processor = LatexProcessor(agent)
 
-    def generate_tex(self, user: User, agent_invoker: AgentInvoker) -> str:
+    def generate_tex(self, user: User) -> str:
         """Generate complete LaTeX from data."""
         # Load template
         template_path = TEMPLATE_DIR / "main.tex"

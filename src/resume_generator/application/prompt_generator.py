@@ -1,3 +1,5 @@
+import logging
+
 from langchain_core.prompts import PromptTemplate
 
 from resume_generator.domains.education import Education
@@ -12,6 +14,8 @@ from resume_generator.prompt_templates import (
     PROJECT_BULLET_POINT_GENERATOR_TEMPLATE,
     PROJECT_DESCRIPTION_TEMPLATE,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class PromptGenerator:
@@ -38,9 +42,11 @@ class PromptGenerator:
         work_bullet_points_template = PromptTemplate.from_template(
             JOB_BULLET_POINT_GENERATOR_TEMPLATE
         )
-        return work_bullet_points_template.format(
+        prompt = work_bullet_points_template.format(
             job_description=self.job_description, work_experience="\n".join(experiences)
         )
+        logger.info("Job experience prompt: ", prompt)
+        return prompt
 
     def get_llm_prompt_education(self, schools: list[Education]) -> str:
         school_description_template = PromptTemplate.from_template(
@@ -57,9 +63,11 @@ class PromptGenerator:
             )
 
         education_template = PromptTemplate.from_template(EDUCATION_SELECTION_TEMPLATE)
-        return education_template.format(
+        prompt = education_template.format(
             job_description=self.job_description, education="\n".join(education)
         )
+        logger.info("Education prompt: ", prompt)
+        return prompt
 
     def get_llm_prompt_projects(self, projects_list: list[Project]) -> str:
         project_template = PromptTemplate.from_template(PROJECT_DESCRIPTION_TEMPLATE)
@@ -85,7 +93,9 @@ class PromptGenerator:
         project_bullet_points_template = PromptTemplate.from_template(
             PROJECT_BULLET_POINT_GENERATOR_TEMPLATE
         )
-        return project_bullet_points_template.format(
+        prompt = project_bullet_points_template.format(
             job_description=self.job_description,
             projects_description="\n".join(projects),
         )
+        logger.info("Project prompt: ", prompt)
+        return prompt
