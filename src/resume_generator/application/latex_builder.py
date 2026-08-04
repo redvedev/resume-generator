@@ -1,11 +1,7 @@
-import logging
-
 from resume_generator.application.agent_invoker import AgentInvoker
 from resume_generator.application.config import TEMPLATE_DIR
 from resume_generator.application.latex.latex_processor import LatexProcessor
 from resume_generator.domains.user import User
-
-logger = logging.getLogger(__name__)
 
 
 class LatexGenerator:

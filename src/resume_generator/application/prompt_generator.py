@@ -45,7 +45,7 @@ class PromptGenerator:
         prompt = work_bullet_points_template.format(
             job_description=self.job_description, work_experience="\n".join(experiences)
         )
-        logger.info("Job experience prompt: ", prompt)
+        logger.info(f"Job experience prompt: {prompt}")
         return prompt
 
     def get_llm_prompt_education(self, schools: list[Education]) -> str:
@@ -66,7 +66,7 @@ class PromptGenerator:
         prompt = education_template.format(
             job_description=self.job_description, education="\n".join(education)
         )
-        logger.info("Education prompt: ", prompt)
+        logger.info(f"Education prompt: {prompt}")
         return prompt
 
     def get_llm_prompt_projects(self, projects_list: list[Project]) -> str:
@@ -97,5 +97,5 @@ class PromptGenerator:
             job_description=self.job_description,
             projects_description="\n".join(projects),
         )
-        logger.info("Project prompt: ", prompt)
+        logger.info(f"Project prompt: {prompt}")
         return prompt

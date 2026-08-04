@@ -8,11 +8,8 @@ from resume_generator.application.agent_invoker import AgentInvoker
 from resume_generator.application.latex_builder import LatexGenerator
 from resume_generator.application.prompt_generator import PromptGenerator
 
+logging.basicConfig(filename="example.log", encoding="utf-8", level=logging.INFO)
 logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-stdout = logging.StreamHandler(sys.stdout)
-stdout.setFormatter(logging.Formatter("%(name)s: %(message)s"))
-logger.addHandler(stdout)
 
 
 def main():
@@ -24,7 +21,7 @@ def main():
     user = user_reader.read_user()
 
     offer = "We are looking for data analytics in R"
-    logging.info("Processing offer: ", offer)
+    logging.info(f"Processing offer: {offer}")
     # TODO: Add filtering user skills to the offer according to the text, and make a new user you will send here
 
     prompt_generator = PromptGenerator(offer)

@@ -25,8 +25,8 @@ class AgentInvoker:
         prompt = self.prompt_generator.get_llm_prompt_work(experience)
         model = self.agent.with_structured_output(ExperienceResponse)
         response = model.invoke(prompt)
-        logger.info("Experience input: ", experience)
-        logger.info("Experience output: ", response)
+        logger.info(f"Experience input: {experience}")
+        logger.info(f"Experience output: {response}")
         if type(response) == ExperienceResponse:
             return response
         raise RuntimeError(
@@ -37,8 +37,8 @@ class AgentInvoker:
         prompt = self.prompt_generator.get_llm_prompt_projects(projects)
         model = self.agent.with_structured_output(ProjectResponse)
         response = model.invoke(prompt)
-        logger.info("Projects input: ", projects)
-        logger.info("Projects output: ", response)
+        logger.info(f"Projects input: {projects}")
+        logger.info(f"Projects output: {response}")
         if type(response) == ProjectResponse:
             return response
         raise RuntimeError("Project response from LLM Doesn't match format: ", response)
@@ -47,8 +47,8 @@ class AgentInvoker:
         prompt = self.prompt_generator.get_llm_prompt_education(schools)
         model = self.agent.with_structured_output(EducationResponse)
         response = model.invoke(prompt)
-        logger.info("Education input: ", schools)
-        logger.info("Education output: ", response)
+        logger.info(f"Education input: {schools}")
+        logger.info(f"Education output: {response}")
         if type(response) == EducationResponse:
             return response
         raise RuntimeError(
