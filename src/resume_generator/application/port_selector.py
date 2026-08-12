@@ -1,6 +1,6 @@
 from langchain_google_genai import ChatGoogleGenerativeAI
 
-from resume_generator.adapters.user_processor import JsonUserReader
+from resume_generator.adapters.json_user_reader import JsonUserReader
 from resume_generator.application.config import PERSONAL_INFO_DIR
 from resume_generator.ports.user_processor import UserDataReader
 
