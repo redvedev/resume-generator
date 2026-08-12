@@ -5,7 +5,7 @@ from pathlib import Path
 
 # File paths
 DATA_DIR = Path("data")
-PERSONAL_INFO_DIR = DATA_DIR / "personal_data"
+PERSONAL_INFO_DIR = DATA_DIR / "personal_data_json"
 TEMPLATE_DIR = DATA_DIR / "template"
 # OUTPUT_DIR = Path("data/output")
 # OFFER_DIR = Path("data/offers")
