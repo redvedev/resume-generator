@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from resume_generator.adapters.user_processor import JsonUserReader
+from resume_generator.adapters.json_user_reader import JsonUserReader
 from resume_generator.application.prompt_generator import PromptGenerator
 from resume_generator.domains.user import User
 from resume_generator.ports.user_processor import UserDataReader
@@ -24,8 +24,8 @@ def offer_description() -> str:
 
 
 @pytest.fixture
-def prompt_generator(offer_description: str, user: User) -> PromptGenerator:
-    return PromptGenerator(offer_description, user)
+def prompt_generator(offer_description: str) -> PromptGenerator:
+    return PromptGenerator(offer_description)
 
 
 def test_reading_personal_data(user_processor: UserDataReader):
@@ -48,7 +48,7 @@ def test_reading_projects(user_processor: UserDataReader):
     user_processor._get_user_projects()
 
 
-def test_prompt_generation(prompt_generator: PromptGenerator):
-    prompt_generator.get_llm_prompt_work()
-    prompt_generator.get_llm_prompt_projects()
-    prompt_generator.get_llm_prompt_education()
+def test_prompt_generation(prompt_generator: PromptGenerator, user: User):
+    prompt_generator.get_llm_prompt_work(user.experience)
+    prompt_generator.get_llm_prompt_projects(user.projects)
+    prompt_generator.get_llm_prompt_education(user.education)
