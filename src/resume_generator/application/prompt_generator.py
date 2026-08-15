@@ -57,8 +57,7 @@ class PromptGenerator:
             education.append(
                 school_description_template.format(
                     school_id=school.school_id,
-                    relevant_courses=", ".join(school.skills),
-                    irrelevant_courses=", ".join(school.irrelevant_skills),
+                    courses=", ".join(school.skills),
                 )
             )
 
