@@ -42,15 +42,3 @@ class AgentInvoker:
         if type(response) == ProjectResponse:
             return response
         raise RuntimeError("Project response from LLM Doesn't match format: ", response)
-
-    def get_user_education_summary(self, schools: list[Education]) -> EducationResponse:
-        prompt = self.prompt_generator.get_llm_prompt_education(schools)
-        model = self.agent.with_structured_output(EducationResponse)
-        response = model.invoke(prompt)
-        logger.info(f"Education input: {schools}")
-        logger.info(f"Education output: {response}")
-        if type(response) == EducationResponse:
-            return response
-        raise RuntimeError(
-            "Education response from LLM Doesn't match format: ", response
-        )

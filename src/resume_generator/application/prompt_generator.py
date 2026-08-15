@@ -48,26 +48,6 @@ class PromptGenerator:
         logger.info(f"Job experience prompt: {prompt}")
         return prompt
 
-    def get_llm_prompt_education(self, schools: list[Education]) -> str:
-        school_description_template = PromptTemplate.from_template(
-            EDUCATION_SCHOOL_DESCRIPTION_TEMPLATE
-        )
-        education = []
-        for school in schools:
-            education.append(
-                school_description_template.format(
-                    school_id=school.school_id,
-                    courses=", ".join(school.skills),
-                )
-            )
-
-        education_template = PromptTemplate.from_template(EDUCATION_SELECTION_TEMPLATE)
-        prompt = education_template.format(
-            job_description=self.job_description, education="\n".join(education)
-        )
-        logger.info(f"Education prompt: {prompt}")
-        return prompt
-
     def get_llm_prompt_projects(self, projects_list: list[Project]) -> str:
         project_template = PromptTemplate.from_template(PROJECT_DESCRIPTION_TEMPLATE)
         projects = []

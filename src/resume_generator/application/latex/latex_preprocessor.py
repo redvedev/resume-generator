@@ -67,29 +67,22 @@ class LatexPreprocessor:
             jobs=sorted(items, key=lambda x: x.beginning_date, reverse=True)
         )
 
-    def prepare_education_latex(
-        self, schools: list[Education], schools_summary: EducationResponse
-    ) -> LatexSchools:
+    def prepare_education_latex(self, schools: list[Education]) -> LatexSchools:
         items = []
         for school in schools:
-            for school_summary in schools_summary.schools:
-                if school.school_id != school_summary.school_id:
-                    continue
-                date = datetime.strptime(school.dates.split("-")[0].strip(), "%m/%Y")
-                items.append(
-                    LatexSchool(
-                        name=self.text_normalizer.escape_and_normalize(
-                            school.school_name
-                        ),
-                        degree=self.text_normalizer.escape_and_normalize(school.degree),
-                        dates=self.text_normalizer.format_header_dates(school.dates),
-                        beginning_date=date,
-                        courses=[
-                            self.text_normalizer.escape_and_normalize(s)
-                            for s in school_summary.courses
-                        ],
-                    )
+            date = datetime.strptime(school.dates.split("-")[0].strip(), "%m/%Y")
+            items.append(
+                LatexSchool(
+                    name=self.text_normalizer.escape_and_normalize(school.school_name),
+                    degree=self.text_normalizer.escape_and_normalize(school.degree),
+                    dates=self.text_normalizer.format_header_dates(school.dates),
+                    beginning_date=date,
+                    courses=[
+                        self.text_normalizer.escape_and_normalize(s)
+                        for s in school.skills
+                    ],
                 )
+            )
         return LatexSchools(
             schools=sorted(items, key=lambda x: x.beginning_date, reverse=True)
         )

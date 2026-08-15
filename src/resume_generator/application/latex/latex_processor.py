@@ -73,13 +73,9 @@ class LatexSectionBuilder:
         )
         return self.latex_renderer.render_projects(processed_projects)
 
-    def build_education_section(
-        self, summaries: EducationResponse, schools: list[Education]
-    ) -> str:
+    def build_education_section(self, schools: list[Education]) -> str:
         """Build education section as LaTeX matching original template."""
-        processed_schools = self.latex_preprocessor.prepare_education_latex(
-            schools, summaries
-        )
+        processed_schools = self.latex_preprocessor.prepare_education_latex(schools)
         return self.latex_renderer.render_schools(processed_schools)
 
 
@@ -117,7 +113,7 @@ class LatexProcessor:
             "Education",
             self.latex_builder.build_education_section(
                 schools=education,
-                summaries=self.agent_invoker.get_user_education_summary(education),
+                # summaries=self.agent_invoker.get_user_education_summary(education),
             ),
         )
 
