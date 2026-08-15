@@ -6,13 +6,14 @@ from resume_generator.domains.education import Education
 from resume_generator.domains.experience import Experience
 from resume_generator.domains.project import Project
 from resume_generator.domains.skills import Skills
+from resume_generator.domains.user import User
 from resume_generator.prompt_templates import (
     EDUCATION_SCHOOL_DESCRIPTION_TEMPLATE,
-    EDUCATION_SELECTION_TEMPLATE,
     JOB_BULLET_POINT_GENERATOR_TEMPLATE,
     JOB_DESCRIPTION_TEMPLATE,
     PROJECT_BULLET_POINT_GENERATOR_TEMPLATE,
     PROJECT_DESCRIPTION_TEMPLATE,
+    USER_SELECTION_FACT_TEMPLATE,
 )
 
 logger = logging.getLogger(__name__)
@@ -77,4 +78,13 @@ class PromptGenerator:
             projects_description="\n".join(projects),
         )
         logger.info(f"Project prompt: {prompt}")
+        return prompt
+
+    def select_user_facts(self, user: User) -> str:
+        template = PromptTemplate.from_template(USER_SELECTION_FACT_TEMPLATE)
+        prompt = template.format(
+            job_description=self.job_description,
+            user_json=user.model_dump_json(indent=4),
+        )
+        logger.info(f"User selection prompt: {prompt}")
         return prompt

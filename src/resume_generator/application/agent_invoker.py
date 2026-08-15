@@ -10,6 +10,7 @@ from resume_generator.domains.agent_responses import (
 from resume_generator.domains.education import Education
 from resume_generator.domains.experience import Experience
 from resume_generator.domains.project import Project
+from resume_generator.domains.user import User
 
 logger = logging.getLogger(__name__)
 
@@ -42,3 +43,13 @@ class AgentInvoker:
         if type(response) == ProjectResponse:
             return response
         raise RuntimeError("Project response from LLM Doesn't match format: ", response)
+
+    def filter_user_data(self, user: User) -> User:
+        prompt = self.prompt_generator.select_user_facts(user)
+        model = self.agent.with_structured_output(User)
+        response = model.invoke(prompt)
+        logger.info(f"User input: {user}")
+        logger.info(f"User output: {response}")
+        if type(response) == User:
+            return response
+        raise RuntimeError("User response from LLM Doesn't match format: ", response)

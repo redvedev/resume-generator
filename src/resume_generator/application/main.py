@@ -1,5 +1,5 @@
 import logging
-import sys
+from pathlib import Path
 
 from dotenv import load_dotenv
 
@@ -26,8 +26,11 @@ def main():
 
     prompt_generator = PromptGenerator(offer)
     agent = AgentInvoker(prompt_generator)
+    filtered_user = agent.filter_user_data(user)
     latex_builder = LatexGenerator(agent)
-    latex = latex_builder.generate_tex(user)
+    latex = latex_builder.generate_tex(filtered_user)
+    latex_path = Path("output.tex")
+    latex_path.write_text(latex)
 
 
 if __name__ == "__main__":
