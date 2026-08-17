@@ -1,11 +1,13 @@
 from abc import ABC, abstractmethod
 
-from resume_generator.domains.education import Education
-from resume_generator.domains.experience import Experience
-from resume_generator.domains.personal_info import PersonalInfo
-from resume_generator.domains.project import Project
-from resume_generator.domains.skills import Skills
-from resume_generator.domains.user import User
+from resume_generator.domains.user import (
+    Education,
+    Experience,
+    PersonalInfo,
+    Project,
+    Skills,
+    User,
+)
 
 
 class UserDataReader(ABC):
