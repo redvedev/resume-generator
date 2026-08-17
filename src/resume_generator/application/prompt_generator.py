@@ -2,17 +2,18 @@ import logging
 
 from langchain_core.prompts import PromptTemplate
 
-from resume_generator.domains.education import Education
-from resume_generator.domains.experience import Experience
-from resume_generator.domains.project import Project
-from resume_generator.domains.skills import Skills
-from resume_generator.domains.user import User
+from resume_generator.application.config import PERSONAL_INFO_DIR
+from resume_generator.domains.user import (
+    Education,
+    Experience,
+    PersonalInfo,
+    Project,
+    Skills,
+    User,
+)
 from resume_generator.prompt_templates import (
-    EDUCATION_SCHOOL_DESCRIPTION_TEMPLATE,
-    JOB_BULLET_POINT_GENERATOR_TEMPLATE,
-    JOB_DESCRIPTION_TEMPLATE,
-    PROJECT_BULLET_POINT_GENERATOR_TEMPLATE,
-    PROJECT_DESCRIPTION_TEMPLATE,
+    NOTES_TEMPLATE,
+    RATE_USER_FIT_TEMPLATE,
     USER_SELECTION_FACT_TEMPLATE,
 )
 
@@ -20,71 +21,48 @@ logger = logging.getLogger(__name__)
 
 
 class PromptGenerator:
-    def __init__(self, job_description: str):
-        self.job_description = job_description
+    def __init__(self):
+        pass
 
-    def get_llm_prompt_work(self, experience: list[Experience]) -> str:
-        experience_template = PromptTemplate.from_template(JOB_DESCRIPTION_TEMPLATE)
-        experiences = []
-        for job in experience:
-            tasks = "\n".join("- " + task for task in job.achievements)
-            impact = "\n".join("- " + imp for imp in job.impact)
-            tech_stack = ", ".join(job.technologies)
-            experiences.append(
-                experience_template.format(
-                    job_id=job.job_id,
-                    summary=job.summary,
-                    tasks=tasks,
-                    impact=impact,
-                    tech_stack=tech_stack,
-                )
-            )
+    def read_user_data(self) -> str:
+        user_data_home_dir = PERSONAL_INFO_DIR
+        user_data_dir_content = ""
 
-        work_bullet_points_template = PromptTemplate.from_template(
-            JOB_BULLET_POINT_GENERATOR_TEMPLATE
-        )
-        prompt = work_bullet_points_template.format(
-            job_description=self.job_description, work_experience="\n".join(experiences)
-        )
-        logger.info(f"Job experience prompt: {prompt}")
-        return prompt
+        for file in user_data_home_dir.glob("*.md"):
+            user_data_dir_content += f"""File name: {file.name}
+        ============================================
+        {file.read_text(encoding="utf-8")}
+        ============================================
+        """
 
-    def get_llm_prompt_projects(self, projects_list: list[Project]) -> str:
-        project_template = PromptTemplate.from_template(PROJECT_DESCRIPTION_TEMPLATE)
-        projects = []
-        for project in projects_list:
-            actions = "\n".join("- " + task for task in project.actions)
-            outcome = "\n".join("- " + imp for imp in project.outcome)
-            metrices = "\n".join("- " + imp for imp in project.metrics)
-            tech_stack = ", ".join(project.technologies)
-            projects.append(
-                project_template.format(
-                    project_id=project.project_id,
-                    project_name=project.name,
-                    project_type=project.type.value,
-                    project_description=project.description,
-                    actions=actions,
-                    project_outcome=outcome,
-                    metrics=metrices,
-                    tech_stack=tech_stack,
-                )
-            )
+        for directory in user_data_home_dir.glob("*/"):
+            if directory.stem[0] == ".":
+                continue
+            for file in directory.glob("*.md"):
+                user_data_dir_content += f"""Directory name: {directory.stem}
+        ============================================
+        {file.read_text(encoding="utf-8")}
+        ============================================
+        """
+        return user_data_dir_content
 
-        project_bullet_points_template = PromptTemplate.from_template(
-            PROJECT_BULLET_POINT_GENERATOR_TEMPLATE
-        )
-        prompt = project_bullet_points_template.format(
-            job_description=self.job_description,
-            projects_description="\n".join(projects),
-        )
-        logger.info(f"Project prompt: {prompt}")
-        return prompt
-
-    def select_user_facts(self, user: User) -> str:
+    def select_user_facts(self, job_description: str) -> str:
         template = PromptTemplate.from_template(USER_SELECTION_FACT_TEMPLATE)
-        prompt = template.format(
-            job_description=self.job_description,
-            user_json=user.model_dump_json(indent=4),
-        )
+        user = self.read_user_data()
+        prompt = template.format(job_description=job_description, user_json=user)
         logger.info(f"User selection prompt: {prompt}")
+        return prompt
+
+    def rate_user_fit(self, job_description: str) -> str:
+        template = PromptTemplate.from_template(RATE_USER_FIT_TEMPLATE)
+        user = self.read_user_data()
+        prompt = template.format(job_description=job_description, user=user)
+        return prompt
+
+    def get_job_notes(self, job_description: str, user: User) -> str:
+        # Now we want make notes based on the actual user data, not entire database
+        template = PromptTemplate.from_template(NOTES_TEMPLATE)
+        prompt = template.format(
+            job_description=job_description, user=user.model_dump_json(indent=4)
+        )
         return prompt

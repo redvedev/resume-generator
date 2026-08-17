@@ -32,6 +32,10 @@ Tone should be factual, concise, highlighting achievements and results, by showi
 The bullet points later will be rewritten, and your task is to provide me with the most relevant information to include in the bullet points.
 Description should be concise, and meaningful so it can be rewritten into bullet points which will also mention tools, results, and keywords.
 
+# Response – Providing the response format, like a list or JSON, makes sure the FM outputs in the required structure for downstream tasks
+
+Dates should be formatted in MM/YYYY format
+
 ========================
 Job description: {job_description}
 
