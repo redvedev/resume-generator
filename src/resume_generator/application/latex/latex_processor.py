@@ -4,14 +4,6 @@ from resume_generator.application.agent_invoker import AgentInvoker
 from resume_generator.application.latex.later_renderer import LatexRenderer
 from resume_generator.application.latex.latex_normalizer import LatexNormalizer
 from resume_generator.application.latex.latex_preprocessor import LatexPreprocessor
-from resume_generator.domains.agent_responses import (
-    EducationResponse,
-    ExperienceResponse,
-    ExperienceSummary,
-    ProjectResponse,
-)
-from resume_generator.domains.education import Education
-from resume_generator.domains.experience import Experience
 from resume_generator.domains.latex_renders import (
     LatexJob,
     LatexJobs,
@@ -22,10 +14,14 @@ from resume_generator.domains.latex_renders import (
     LatexSkill,
     LatexSkills,
 )
-from resume_generator.domains.personal_info import PersonalInfo
-from resume_generator.domains.project import Project
-from resume_generator.domains.skills import Skills
-from resume_generator.domains.user import User
+from resume_generator.domains.user import (
+    Education,
+    Experience,
+    PersonalInfo,
+    Project,
+    Skills,
+    User,
+)
 
 
 class LatexSectionBuilder:
@@ -49,28 +45,20 @@ class LatexSectionBuilder:
         processed_skills = self.latex_preprocessor.prepare_skills_latex(skills)
         return self.latex_renderer.render_skills(processed_skills)
 
-    def build_experience_section(
-        self, experience_summary: ExperienceResponse, experiences: list[Experience]
-    ) -> str:
+    def build_experience_section(self, experiences: list[Experience]) -> str:
         """Build experience section as LaTeX."""
         if not experiences:
             return ""
 
-        jobs = self.latex_preprocessor.prepare_experience_latex(
-            experiences, experience_summary
-        )
+        jobs = self.latex_preprocessor.prepare_experience_latex(experiences)
         return self.latex_renderer.render_jobs(jobs)
 
-    def build_projects_section(
-        self, projects_summaries: ProjectResponse, projects: list[Project]
-    ) -> str:
+    def build_projects_section(self, projects: list[Project]) -> str:
         """Build projects section as LaTeX."""
         if not projects:
             return ""
 
-        processed_projects = self.latex_preprocessor.prepare_projects_latex(
-            projects, projects_summaries
-        )
+        processed_projects = self.latex_preprocessor.prepare_projects_latex(projects)
         return self.latex_renderer.render_projects(processed_projects)
 
     def build_education_section(self, schools: list[Education]) -> str:
@@ -80,10 +68,9 @@ class LatexSectionBuilder:
 
 
 class LatexProcessor:
-    def __init__(self, agent_invoker: AgentInvoker) -> None:
+    def __init__(self) -> None:
         self.text_normalizer = LatexNormalizer()
         self.latex_builder = LatexSectionBuilder()
-        self.agent_invoker = agent_invoker
 
     def generate_personal_info(self, personal: PersonalInfo):
         return PersonalInfo(
@@ -127,9 +114,6 @@ class LatexProcessor:
         return self.latex_builder.build_simple_body_section(
             "Experience",
             self.latex_builder.build_experience_section(
-                experience_summary=self.agent_invoker.get_user_experience_summary(
-                    experience
-                ),
                 experiences=experience,
             ),
         )
@@ -138,9 +122,6 @@ class LatexProcessor:
         return self.latex_builder.build_simple_body_section(
             "Projects",
             self.latex_builder.build_projects_section(
-                projects_summaries=self.agent_invoker.get_user_projects_summary(
-                    projects
-                ),
                 projects=projects,
             ),
         )

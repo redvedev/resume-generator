@@ -7,8 +7,8 @@ from resume_generator.domains.user import User
 class LatexGenerator:
     """Build LaTeX resume from structured data."""
 
-    def __init__(self, agent: AgentInvoker):
-        self.latex_processor = LatexProcessor(agent)
+    def __init__(self):
+        self.latex_processor = LatexProcessor()
 
     def generate_tex(self, user: User) -> str:
         """Generate complete LaTeX from data."""
