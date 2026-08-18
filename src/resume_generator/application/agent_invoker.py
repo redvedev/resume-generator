@@ -29,7 +29,7 @@ class AgentInvoker:
             return response
         raise RuntimeError("User response from LLM Doesn't match format: ", response)
 
-    def get_user_fit(self, job_description: str, user: User) -> float:
+    def get_user_fit(self, job_description: str) -> float:
         prompt = self.prompt_generator.rate_user_fit(job_description)
         model = self.agent.with_structured_output(UserFitResponse)
         response = model.invoke(prompt)
