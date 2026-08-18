@@ -31,3 +31,11 @@ The tips should consist of 3-5 bullet points
 # Tone – Setting the tone makes sure the response resonates with the required sentiment, whether it be formal, humorous, or empathetic
 
 Tone should be professional, informational, direct and concise. Don't mention why I might be good fit. I need feedback on what can be done better, and how to prepare
+
+===============
+INPUT:
+Job description:
+{job_description}
+
+User resume:
+{user}
