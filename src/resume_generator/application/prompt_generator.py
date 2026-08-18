@@ -50,7 +50,6 @@ class PromptGenerator:
         template = PromptTemplate.from_template(USER_SELECTION_FACT_TEMPLATE)
         user = self.read_user_data()
         prompt = template.format(job_description=job_description, user_json=user)
-        logger.info(f"User selection prompt: {prompt}")
         return prompt
 
     def rate_user_fit(self, job_description: str) -> str:
