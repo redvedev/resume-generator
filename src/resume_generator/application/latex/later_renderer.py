@@ -73,7 +73,7 @@ class LatexRenderer:
         block_lines = [
             f"\\noindent \\textbf{{{project.name}}} - {project.project_type} \\hfill {project.year}{self.row_break}",
             f"\\textbf{{Description}}: {project.description}{self.row_break}",
-            f"\\textbf{{Technologies}}: {project.technologies}",
+            f"\\textbf{{Technologies}}: {", ".join(project.technologies)}",
         ]
         bullet_lines = [
             "\\begin{itemize}[leftmargin=*,labelsep=0.5em,itemsep=-0.5em,topsep=0pt]",
