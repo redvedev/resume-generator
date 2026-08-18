@@ -49,8 +49,16 @@ class AgentInvoker:
         response = model.invoke(prompt)
         logger.info(f"Response: {response}")
         if type(response) == JobNotesResponse:
-            return response.notes
+            return self._normalize_notes(response.notes)
         raise RuntimeError
+
+    @staticmethod
+    def _normalize_notes(notes: str) -> str:
+        if "\\n" in notes:
+            notes = notes.replace("\\n", "\n")
+        if "\\t" in notes:
+            notes = notes.replace("\\t", "\t")
+        return notes
 
     def analyze_requirements(self, job_description: str) -> RequirementAnalysis:
         prompt = self.prompt_generator.analyze_job_requirements(job_description)
