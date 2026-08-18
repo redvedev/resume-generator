@@ -6,6 +6,8 @@ from pydantic import BaseModel, ConfigDict, Field
 
 
 class PersonalInfo(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
     name: str = Field(alias="name")
     phone_number: str = Field(alias="phone")
     location: str = Field(alias="location")
@@ -17,6 +19,8 @@ class PersonalInfo(BaseModel):
 
 
 class Education(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
     _id_counter: ClassVar[count] = count(1)
     degree: str = Field(alias="degree")
     school_name: str = Field(alias="school name")
@@ -25,6 +29,8 @@ class Education(BaseModel):
 
 
 class Experience(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
     _id_counter: ClassVar[count] = count(1)
     company: str = Field(alias="company")
     position: str = Field(alias="position")
@@ -41,6 +47,8 @@ class ProjectType(Enum):
 
 
 class Project(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
     _id_counter: ClassVar[count] = count(1)
     project_id: int = Field(default_factory=lambda: next(Project._id_counter))
     name: str = Field(alias="name")
@@ -52,11 +60,15 @@ class Project(BaseModel):
 
 
 class Skills(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
     skills_category: str = Field(alias="category")
     skills: list[str] = Field(alias="skills")
 
 
 class User(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
     personal_info: PersonalInfo
     education: list[Education]
     experience: list[Experience]
