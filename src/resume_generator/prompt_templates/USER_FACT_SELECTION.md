@@ -18,6 +18,7 @@ So, select skills, school courses, select 2-3 most relevant projects, and ALL jo
 I want you to describe work places and projects in a way that fits the job description I provide you with.
 Personal data should remain unchanged, but you should edit the user description/summary to be the best fit for this job description.
 You can rephrase the work experience and projects to fit the job description, but you are forbidden from making up any information.
+The confirmed requirement matches should be the primary filter for choosing facts and rewriting descriptions.
 
 # Style – Specifying the desired writing style, such as emulating a famous personality or professional expert, guides the FM to align its response with your needs
 
