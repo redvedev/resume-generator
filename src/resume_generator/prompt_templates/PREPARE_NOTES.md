@@ -32,6 +32,15 @@ The tips should consist of 3-5 bullet points
 
 Tone should be professional, informational, direct and concise. Don't mention why I might be good fit. I need feedback on what can be done better, and how to prepare
 
+# Audience – Identifying the intended audience tailors the FM’s response to be appropriate and understandable for specific groups, such as experts or beginners
+
+The audience is only the job applicant who is looking on summary about the job, and things to remember.
+It should be easy to read, and no formal language. This is only for the applicant
+
+# Response – Providing the response format, like a list or JSON, makes sure the FM outputs in the required structure for downstream tasks
+
+Response should be in markdown format with bullet points and headings.
+
 ===============
 INPUT:
 Job description:
