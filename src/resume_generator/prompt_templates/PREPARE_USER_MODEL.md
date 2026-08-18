@@ -43,6 +43,7 @@ If the user has skill similar, but not exactly the same as in the offer, you sho
 For example AWS and Azure are similar. Postgres and MySQL.
 In this section you are strictly prohibited from mentioning any skill that isn't present in user data, or in any of user projects, experiences...
 Skills I provide you with were handwritten, and may not include everything so when looking for skills analyze entire user data.
+Include all human language skills. Don't keep only english, but also any other languages the user knows.
 
 ## Education
 
