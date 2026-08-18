@@ -20,13 +20,7 @@ def configure_logging() -> None:
     root_logger.setLevel(logging.INFO)
     root_logger.handlers.clear()
 
-    stream_handler = logging.StreamHandler()
-    stream_handler.setLevel(logging.INFO)
-    stream_handler.setFormatter(
-        logging.Formatter("%(asctime)s - %(levelname)s - %(name)s - %(message)s")
-    )
-
-    root_logger.addHandler(stream_handler)
+    root_logger.propagate = False
 
 
 @contextmanager
@@ -44,8 +38,6 @@ def offer_file_logger(log_file: Path):
     finally:
         root_logger.removeHandler(file_handler)
         file_handler.close()
-
-    root_logger.addHandler(file_handler)
 
 
 class FileManager:
@@ -207,19 +199,16 @@ class FileManager:
         for file in self.offers.rglob("*.txt"):
             offer_name = file.stem
             output_dir = self.target_folder / offer_name
+            print(f"Przetwarzam ofertę: {file.name}", flush=True)
             self.process_offer(file, output_dir)
 
 
 def main():
     configure_logging()
-    logger.info("Application started. Loading environment variables")
     load_dotenv()
 
-    logger.info("Trying to read user data")
     fm = FileManager()
-    logger.info("Starting offer processing")
     fm.process_offers_dir()
-    logger.info("Offer processing finished")
 
 
 if __name__ == "__main__":
