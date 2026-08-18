@@ -39,7 +39,8 @@ It should be easy to read, and no formal language. This is only for the applican
 
 # Response – Providing the response format, like a list or JSON, makes sure the FM outputs in the required structure for downstream tasks
 
-Response should be in markdown format with bullet points and headings.
+Response should be in raw markdown format with bullet points and headings.
+Do not escape newlines or tabs, and do not wrap the result in JSON or code fences.
 
 ===============
 INPUT:
