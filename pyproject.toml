@@ -27,3 +27,4 @@ extraPaths = ["."]
 
 [tool.poetry.scripts]
 main = "resume_generator.application.main:main"
+compile = "resume_generator.application.compile:main"
