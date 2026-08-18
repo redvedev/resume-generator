@@ -1,13 +1,21 @@
-"""Compile LaTeX to PDF - Simple version that works like manual compilation."""
+"""Compile generated LaTeX files to PDF."""
 
-import logging
-import subprocess
-import shutil
-from pathlib import Path
 from datetime import datetime
-from src.application.config import TEMPLATE_DIR, OUTPUT_DIR
+import logging
+import shutil
+import subprocess
+from pathlib import Path
+
+from resume_generator.application.config import OUTPUT_DIR, TEMPLATE_DIR
 
 logger = logging.getLogger(__name__)
+
+
+def configure_logging() -> None:
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
+    )
 
 
 def _cleanup_latex_artifacts(tex_dir: Path, tex_stem: str) -> None:
@@ -32,27 +40,27 @@ def _cleanup_latex_artifacts(tex_dir: Path, tex_stem: str) -> None:
 
 def compile_single_tex(tex_path: str):
     """Compile a single .tex file to PDF."""
-    
+
     tex_file = Path(tex_path)
-    
+
     if not tex_file.exists():
         logger.error("File not found: %s", tex_file)
         return False
-    
+
     # Check if pdflatex is available
     pdflatex_path = shutil.which("pdflatex")
     if not pdflatex_path:
         logger.error("pdflatex not found. Please install MiKTeX.")
         return False
-    
+
     # Get the directory containing the tex file
     tex_dir = tex_file.parent
     tex_name = tex_file.name
-    
+
     logger.info("Using pdflatex: %s", pdflatex_path)
     logger.info("Compiling: %s", tex_name)
     logger.info("In directory: %s", tex_dir)
-    
+
     # Make sure resume.cls is in the output directory
     cls_source = Path(TEMPLATE_DIR) / "resume.cls"
     if cls_source.exists():
@@ -60,7 +68,7 @@ def compile_single_tex(tex_path: str):
         if not cls_dest.exists():
             shutil.copy(cls_source, cls_dest)
             logger.info("Copied resume.cls to output directory")
-    
+
     # Run pdflatex twice (for references) - exactly like manual
     try:
         for i in range(2):
@@ -83,10 +91,10 @@ def compile_single_tex(tex_path: str):
                     output=result.stdout,
                     stderr=result.stderr,
                 )
-        
+
         # Check if PDF was created
         pdf_file = tex_dir / f"{tex_file.stem}.pdf"
-        
+
         if pdf_file.exists():
             _cleanup_latex_artifacts(tex_dir, tex_file.stem)
             logger.info("PDF generated: %s", pdf_file)
@@ -94,7 +102,7 @@ def compile_single_tex(tex_path: str):
         else:
             logger.error("PDF not found at: %s", pdf_file)
             return False
-            
+
     except Exception as e:
         logger.exception("Error: %s", e)
         return False
@@ -102,20 +110,21 @@ def compile_single_tex(tex_path: str):
 
 def main():
     """Main function."""
+    configure_logging()
     output_dir = OUTPUT_DIR
-    
+
     if not output_dir.exists():
         logger.error("Output directory not found: %s", output_dir)
         return
-    
+
     # Find all generated tex files inside run directories
     tex_files = list(output_dir.glob("**/resume.tex"))
-    
+
     if not tex_files:
         logger.error("No .tex files found in %s", output_dir)
         logger.info("Run main.py first to generate a .tex file")
         return
-    
+
     # Show available files
     logger.info("Found %d .tex files", len(tex_files))
     for i, f in enumerate(tex_files, 1):
