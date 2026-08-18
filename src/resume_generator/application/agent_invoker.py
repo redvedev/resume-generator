@@ -1,9 +1,16 @@
 import logging
 
+from langchain_core.language_models import LanguageModelInput
+from langchain_core.runnables import Runnable
+from pydantic import BaseModel
+
 from resume_generator.application.port_selector import llm_agent
 from resume_generator.application.prompt_generator import PromptGenerator
 from resume_generator.domains.agent_responses import JobNotesResponse, UserFitResponse
-from resume_generator.domains.requirement_models import RequirementAnalysis, ResumeValidation
+from resume_generator.domains.requirement_models import (
+    RequirementAnalysis,
+    ResumeValidation,
+)
 from resume_generator.domains.user import User
 
 logger = logging.getLogger(__name__)
@@ -13,6 +20,20 @@ class AgentInvoker:
     def __init__(self, prompt_generator: PromptGenerator) -> None:
         self.agent = llm_agent()
         self.prompt_generator = prompt_generator
+
+    def model_invoke(
+        self, model: Runnable[LanguageModelInput, dict | BaseModel], prompt: str
+    ):
+        logger.info(f"Invoking model with prompt: {prompt}")
+        model_copy = self.agent.with_structured_output(
+            model.last.pydantic_object, include_raw=True
+        )
+        response = model_copy.invoke(prompt)
+        usage_metadata = response["raw"].usage_metadata
+        response = response["parsed"]
+        logger.info(f"Model usage: {usage_metadata}")
+        logger.info(f"Model response: {response}")
+        return response
 
     def prepare_user_model(
         self,
@@ -26,7 +47,7 @@ class AgentInvoker:
             validation_feedback=validation_feedback,
         )
         model = self.agent.with_structured_output(User)
-        response = model.invoke(prompt)
+        response = self.model_invoke(model, prompt)
         logger.info(f"User output: {response}")
         if type(response) == User:
             return response
@@ -35,7 +56,7 @@ class AgentInvoker:
     def get_user_fit(self, job_description: str) -> float:
         prompt = self.prompt_generator.rate_user_fit(job_description)
         model = self.agent.with_structured_output(UserFitResponse)
-        response = model.invoke(prompt)
+        response = self.model_invoke(model, prompt)
         logger.info(f"Response: {response}")
         if type(response) == UserFitResponse:
             return response.fit_score
@@ -46,7 +67,7 @@ class AgentInvoker:
     def prepare_job_notes(self, job_description: str, user: User) -> str:
         prompt = self.prompt_generator.get_job_notes(job_description, user)
         model = self.agent.with_structured_output(JobNotesResponse)
-        response = model.invoke(prompt)
+        response = self.model_invoke(model, prompt)
         logger.info(f"Response: {response}")
         if type(response) == JobNotesResponse:
             return self._normalize_notes(response.notes)
@@ -63,7 +84,7 @@ class AgentInvoker:
     def analyze_requirements(self, job_description: str) -> RequirementAnalysis:
         prompt = self.prompt_generator.analyze_job_requirements(job_description)
         model = self.agent.with_structured_output(RequirementAnalysis)
-        response = model.invoke(prompt)
+        response = self.model_invoke(model, prompt)
         logger.info(f"Requirement analysis: {response}")
         if isinstance(response, RequirementAnalysis):
             return response
@@ -73,15 +94,15 @@ class AgentInvoker:
         self,
         job_description: str,
         user: User,
-        requirement_analysis: RequirementAnalysis
-        ) -> ResumeValidation:
+        requirement_analysis: RequirementAnalysis,
+    ) -> ResumeValidation:
         prompt = self.prompt_generator.validate_resume(
             job_description=job_description,
             user=user,
             requirement_analysis=requirement_analysis.model_dump_json(indent=4),
         )
         model = self.agent.with_structured_output(ResumeValidation)
-        response = model.invoke(prompt)
+        response = self.model_invoke(model, prompt)
         logger.info(f"Resume validation: {response}")
         if isinstance(response, ResumeValidation):
             return response
