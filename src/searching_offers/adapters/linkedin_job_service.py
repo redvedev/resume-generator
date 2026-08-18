@@ -67,11 +67,14 @@ class LinkedinJobService(JobServiceConnector):
         url = f"{url_base}?{post_arguments_url}"
         return url
 
-    def get_offers_url(self) -> list[str]
-        all_job_urls = list() # Używamy set(), aby uniknąć duetów
+    def get_offers(self, base_url: str) -> list[str]:
+        self.driver.get(base_url)
+        all_job_urls = list()  # Używamy set(), aby uniknąć duetów
         page_number = 1
+
         def click_next_button():
             pass
+
         while True:
             print(f"Pobieranie ofert ze strony {page_number}...")
             page_number += 1
@@ -84,24 +87,19 @@ class LinkedinJobService(JobServiceConnector):
                 break
 
             # Scroll page down to load all offers
-            self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-            time.sleep(1.5) # Krótka pauza na dociągnięcie elementów lazy-load
+            self.driver.execute_script(
+                "window.scrollTo(0, document.body.scrollHeight);"
+            )
+            time.sleep(1.5)  # Krótka pauza na dociągnięcie elementów lazy-load
             try:
                 next_button = self.driver.find_element(
                     By.CSS_SELECTOR,
-                    "button[data-testid='pagination-controls-next-button-visible']"
+                    "button[data-testid='pagination-controls-next-button-visible']",
                 )
                 self.driver.execute_script("arguments[0].click();", next_button)
                 time.sleep(2)
             except NoSuchElementException:
-                logger.info("The \"Next\" button not found. Probably the end of offers")
+                logger.info('The "Next" button not found. Probably the end of offers')
                 break
-            except Exception from e:
+            except Exception as e:
                 break
-
-
-
-
-    def get_offers(self) -> list[Offer]:
-        print(self.get_offers_url())
-        return []
