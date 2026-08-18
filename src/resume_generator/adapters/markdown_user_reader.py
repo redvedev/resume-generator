@@ -5,12 +5,15 @@ from pathlib import Path
 from langchain_text_splitters import MarkdownHeaderTextSplitter
 from pydantic import ConfigDict
 
-from resume_generator.domains.education import Education
-from resume_generator.domains.experience import Experience
-from resume_generator.domains.personal_info import PersonalInfo
-from resume_generator.domains.project import Project, ProjectType
-from resume_generator.domains.skills import Skills
-from resume_generator.domains.user import User
+from resume_generator.domains.user import (
+    Education,
+    Experience,
+    PersonalInfo,
+    Project,
+    ProjectType,
+    Skills,
+    User,
+)
 from resume_generator.ports.user_processor import UserDataReader
 
 logger = logging.getLogger(__name__)
