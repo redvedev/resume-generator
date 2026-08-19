@@ -6,7 +6,7 @@ from searching_offers.domains.offer import Offer
 
 
 class OfferProcessorPort(ABC):
-    def __int__(self, driver: WebDriver):
+    def __init__(self, driver: WebDriver):
         self.driver = driver
 
     @abstractmethod
