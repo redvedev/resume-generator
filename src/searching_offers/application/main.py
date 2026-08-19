@@ -3,7 +3,11 @@ import logging
 from dotenv import load_dotenv
 from selenium import webdriver
 
-from searching_offers.application.port_selector import _webdriver, job_service
+from searching_offers.application.port_selector import (
+    _webdriver,
+    job_service,
+    offer_processor,
+)
 from searching_offers.domains.search_query import LinkedinSearchQuery
 
 logger = logging.getLogger(__name__)
@@ -30,26 +34,22 @@ def setup_logging():
 def main():
     load_dotenv()
     setup_logging()
-    driver = webdriver.Firefox()
+    driver = _webdriver()
     js = job_service(driver)
+    of = offer_processor(driver)
     js.login()
 
     search_query = LinkedinSearchQuery(
         keywords=[
             "Data Analyst",
-            "Python Developer",
-            "Data Scientist",
-            "Data Engineer",
-            "Software Engineer",
-            "on-site",
-            "hybrid",
-            "remote",
         ],
         geoId="103855053",
-        distance=30,
+        distance=5,
     )
     offers = js.get_offers(search_query)
     print(f"Found {len(offers)} offers")
+    offers = [of.process_offer_from_url(url) for url in offers]
+    print(offers[0])
 
 
 if __name__ == "__main__":
