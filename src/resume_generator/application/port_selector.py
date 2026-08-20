@@ -8,7 +8,7 @@ from resume_generator.ports.user_processor import UserDataReader
 
 
 def llm_agent():
-    # return ChatGoogleGenerativeAI(model="gemini-flash-lite-latest", temperature=0)
+    return ChatGoogleGenerativeAI(model="gemini-flash-lite-latest", temperature=0.2)
     return ChatOpenAI(
         base_url="http://192.168.1.94:56443/v1",
         api_key=SecretStr("lm-studio"),

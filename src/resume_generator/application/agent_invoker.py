@@ -2,6 +2,7 @@ import logging
 
 from langchain_core.language_models import LanguageModelInput
 from langchain_core.runnables import Runnable
+from langchain_google_genai import create_context_cache
 from pydantic import BaseModel
 
 from resume_generator.application.port_selector import llm_agent
@@ -27,11 +28,8 @@ class AgentInvoker:
             output_type, include_raw=True, method="json_schema"
         )
         response = model.invoke(prompt)
-        usage_metadata = response["raw"].usage_metadata
-        response = response["parsed"]
-        logger.info(f"Model usage: {usage_metadata}")
-        logger.info(f"Model response: {response}")
-        return response
+        logger.info(f"Model response: {response["raw"]}")
+        return response["parsed"]
 
     def prepare_user_model(
         self,
