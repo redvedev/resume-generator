@@ -21,14 +21,12 @@ class AgentInvoker:
         self.agent = llm_agent()
         self.prompt_generator = prompt_generator
 
-    def model_invoke(
-        self, model: Runnable[LanguageModelInput, dict | BaseModel], prompt: str
-    ):
+    def model_invoke(self, output_type: type[BaseModel], prompt: str):
         logger.info(f"Invoking model with prompt: {prompt}")
-        model_copy = self.agent.with_structured_output(
-            model.last.pydantic_object, include_raw=True
+        model = self.agent.with_structured_output(
+            output_type, include_raw=True, method="json_schema"
         )
-        response = model_copy.invoke(prompt)
+        response = model.invoke(prompt)
         usage_metadata = response["raw"].usage_metadata
         response = response["parsed"]
         logger.info(f"Model usage: {usage_metadata}")
@@ -46,8 +44,7 @@ class AgentInvoker:
             requirement_analysis=requirement_analysis,
             validation_feedback=validation_feedback,
         )
-        model = self.agent.with_structured_output(User)
-        response = self.model_invoke(model, prompt)
+        response = self.model_invoke(User, prompt)
         logger.info(f"User output: {response}")
         if type(response) == User:
             return response
@@ -55,8 +52,7 @@ class AgentInvoker:
 
     def get_user_fit(self, job_description: str) -> float:
         prompt = self.prompt_generator.rate_user_fit(job_description)
-        model = self.agent.with_structured_output(UserFitResponse)
-        response = self.model_invoke(model, prompt)
+        response = self.model_invoke(UserFitResponse, prompt)
         logger.info(f"Response: {response}")
         if type(response) == UserFitResponse:
             return response.fit_score
@@ -66,8 +62,7 @@ class AgentInvoker:
 
     def prepare_job_notes(self, job_description: str, user: User) -> str:
         prompt = self.prompt_generator.get_job_notes(job_description, user)
-        model = self.agent.with_structured_output(JobNotesResponse)
-        response = self.model_invoke(model, prompt)
+        response = self.model_invoke(JobNotesResponse, prompt)
         logger.info(f"Response: {response}")
         if type(response) == JobNotesResponse:
             return self._normalize_notes(response.notes)
@@ -83,8 +78,7 @@ class AgentInvoker:
 
     def analyze_requirements(self, job_description: str) -> RequirementAnalysis:
         prompt = self.prompt_generator.analyze_job_requirements(job_description)
-        model = self.agent.with_structured_output(RequirementAnalysis)
-        response = self.model_invoke(model, prompt)
+        response = self.model_invoke(RequirementAnalysis, prompt)
         logger.info(f"Requirement analysis: {response}")
         if isinstance(response, RequirementAnalysis):
             return response
@@ -101,8 +95,7 @@ class AgentInvoker:
             user=user,
             requirement_analysis=requirement_analysis.model_dump_json(indent=4),
         )
-        model = self.agent.with_structured_output(ResumeValidation)
-        response = self.model_invoke(model, prompt)
+        response = self.model_invoke(ResumeValidation, prompt)
         logger.info(f"Resume validation: {response}")
         if isinstance(response, ResumeValidation):
             return response
