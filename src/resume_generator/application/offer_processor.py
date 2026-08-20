@@ -27,6 +27,8 @@ def offer_file_logger(log_file: Path):
         logging.Formatter("%(asctime)s - %(levelname)s - %(name)s - %(message)s")
     )
     root_logger = logging.getLogger()
+    # Ensure root logger level allows messages at LOGGING_LEVEL to be emitted
+    root_logger.setLevel(LOGGING_LEVEL)
     root_logger.addHandler(file_handler)
     try:
         yield
@@ -88,10 +90,11 @@ class OfferProcessor:
     ) -> tuple[str, object]:
         logger.info("Retry attempt %s started", counter + 1)
         if counter >= self.max_resume_retries:
-            raise RuntimeError(
+            logger.warning(
                 f"Resume validation failed after {self.max_resume_retries} attempts. Issues: "
                 + "\n".join(validation.issues)
             )
+            return "", validation
         feedback = "\n".join(validation.issues)
         retry_user = self.agent.prepare_user_model(
             job_description,
